@@ -1,3 +1,18 @@
-<h1 class="text-3xl font-bold underline">
-  Hello world!
-</h1>
+<div class="h-screen w-screen grid grid-cols-[260px_1fr]">
+  <aside class="bg-zinc-900 text-zinc-100 p-4 flex flex-col gap-2
+              relative z-10 shadow-[12px_0_24px_-12px_rgba(0,0,0,0.45)]">
+  <div class="pointer-events-none absolute top-0 right-0 h-full w-3
+              bg-gradient-to-l from-black/10 to-transparent"></div>
+    <h1 class="text-xl font-semibold mb-4">Proc. Imagem</h1>
+    <nav class="flex flex-col gap-1">
+      <a routerLink="/filtros" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Filtros</a>
+      <a routerLink="/transformacoes" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Transformações</a>
+      <a routerLink="/segmentacao" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Segmentação</a>
+      <a routerLink="/morfologia" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Morfologia</a>
+    </nav>
+  </aside>
+  <main class="bg-zinc-50 h-full overflow-auto">
+    <app-image class="p-4" />
+    <router-outlet />
+  </main>
+</div>
