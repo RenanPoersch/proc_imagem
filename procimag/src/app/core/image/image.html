@@ -1,4 +1,38 @@
 <div class="flex h-1/2 gap-6 p-6">
-  <div class="flex-1 rounded-2xl bg-white shadow-lg p-4 overflow-hidden min-h-0"></div>
-  <div class="flex-1 rounded-2xl bg-white shadow-lg p-4 overflow-hidden min-h-0"></div>
+  <div class="flex-1 bg-white shadow-lg min-h-0 flex flex-col" style="max-width: 100%; height: 500px;">
+    <div class="flex-1 flex flex-col">
+      <img
+        *ngIf="imageDataUrl"
+        [src]="imageDataUrl"
+        alt="Preview"
+        class="w-full h-full object-cover"
+        style="min-height: 0; min-width: 0;"
+      />
+    </div>
+    <div class="w-full">
+      <label class="w-full block cursor-pointer py-3 px-4 text-center bg-zinc-200 hover:bg-zinc-300 transition">
+        <input type="file" (change)="onFileSelected($event)" class="hidden" />
+        <span>Adicionar arquivo</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="flex-1 bg-white shadow-lg min-h-0 flex flex-col" style="max-width: 100%; height: 500px;">
+    <div class="flex-1 flex flex-col">
+      <img
+        *ngIf="imageDataUrl"
+        [src]="imageDataUrl"
+        alt="Preview"
+        class="w-full h-full object-cover"
+        style="min-height: 0; min-width: 0;"
+      />
+    </div>
+    <div class="w-full">
+      <label class="w-full block cursor-pointer py-3 px-4 text-center bg-zinc-200 hover:bg-zinc-300 transition">
+        <input type="file" (change)="onFileSelected($event)" class="hidden" />
+        <span>Download</span>
+      </label>
+    </div>
+  </div>
+
 </div>
