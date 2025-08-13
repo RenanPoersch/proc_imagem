@@ -4,22 +4,18 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ImageService {
-  private imageDataUrl: string | null = null;
 
-  // Função para upload de foto (lê o arquivo e retorna o DataURL)
   uploadPhoto(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        this.imageDataUrl = reader.result as string;
-        resolve(this.imageDataUrl);
+        resolve(reader.result as string);
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-  // Função para extrair as matrizes de cores (R, G, B) da imagem
   async extractColorMatrices(imageDataUrl: string): Promise<{ r: number[][], g: number[][], b: number[][] }> {
     return new Promise((resolve, reject) => {
       const img = new Image();

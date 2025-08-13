@@ -12,6 +12,7 @@ import { ImageService } from '../image-service';
 })
 export class Image implements AfterViewInit {
   imageDataUrl: string | null = null;
+  afterImageDataUrl: string | null = null;
   rMatrix: number[][] = [];
   gMatrix: number[][] = [];
   bMatrix: number[][] = [];
@@ -22,9 +23,7 @@ export class Image implements AfterViewInit {
 
   constructor(private imageService: ImageService) {}
 
-  ngAfterViewInit() {
-    // Os gráficos só serão desenhados após upload, veja drawAllCharts abaixo
-  }
+  ngAfterViewInit() {}
 
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -35,38 +34,38 @@ export class Image implements AfterViewInit {
           this.rMatrix = r;
           this.gMatrix = g;
           this.bMatrix = b;
-          setTimeout(() => this.drawAllCharts(), 0); // Aguarda o ViewChild atualizar
+          setTimeout(() => this.drawAllCharts(), 0);
         });
       });
     }
   }
 
   drawAllCharts() {
-    this.drawMatrix(this.rCanvas?.nativeElement, this.rMatrix, 'red');
-    this.drawMatrix(this.gCanvas?.nativeElement, this.gMatrix, 'green');
-    this.drawMatrix(this.bCanvas?.nativeElement, this.bMatrix, 'blue');
+    this.drawHistogram(this.rCanvas?.nativeElement, this.rMatrix, 'red');
+    this.drawHistogram(this.gCanvas?.nativeElement, this.gMatrix, 'green');
+    this.drawHistogram(this.bCanvas?.nativeElement, this.bMatrix, 'blue');
   }
 
-  drawMatrix(canvas: HTMLCanvasElement | undefined, matrix: number[][], color: string) {
+  drawHistogram(canvas: HTMLCanvasElement | undefined, matrix: number[][], color: string) {
     if (!canvas || !matrix.length) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Exemplo: desenha a média de cada coluna como um gráfico de barras
+    const hist = new Array(256).fill(0);
+    for (let y = 0; y < matrix.length; y++) {
+      for (let x = 0; x < matrix[0].length; x++) {
+        hist[matrix[y][x]]++;
+      }
+    }
+    const max = Math.max(...hist);
     const width = canvas.width;
     const height = canvas.height;
-    const cols = matrix[0].length;
-    const rows = matrix.length;
 
-    for (let x = 0; x < cols; x++) {
-      let sum = 0;
-      for (let y = 0; y < rows; y++) {
-        sum += matrix[y][x];
-      }
-      const avg = sum / rows;
+    for (let i = 0; i < 256; i++) {
+      const barHeight = (hist[i] / max) * height;
       ctx.fillStyle = color;
-      ctx.fillRect(x, height - (avg / 255) * height, 1, (avg / 255) * height);
+      ctx.fillRect(i, height - barHeight, 1, barHeight);
     }
   }
 }
