@@ -40,6 +40,18 @@ export class Image implements AfterViewInit {
     }
   }
 
+  greenPrint() {
+    console.log('Green Matrix:', this.gMatrix);
+  }
+
+  redPrint() {
+    console.log('Red Matrix:', this.rMatrix);
+  } 
+
+  bluePrint() {
+    console.log('Blue Matrix:', this.bMatrix);
+  }
+
   drawAllCharts() {
     this.drawHistogram(this.rCanvas?.nativeElement, this.rMatrix, 'red');
     this.drawHistogram(this.gCanvas?.nativeElement, this.gMatrix, 'green');

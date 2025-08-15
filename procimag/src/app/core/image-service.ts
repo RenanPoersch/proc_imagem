@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as UTIF from 'utif';
 
 @Injectable({
   providedIn: 'root'
@@ -7,12 +8,37 @@ export class ImageService {
 
   uploadPhoto(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result as string);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext === 'tif' || ext === 'tiff') {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const ifds = UTIF.decode(reader.result as ArrayBuffer);
+            UTIF.decodeImage(reader.result as ArrayBuffer, ifds[0]);
+            const rgba = UTIF.toRGBA8(ifds[0]);
+            const canvas = document.createElement('canvas');
+            canvas.width = ifds[0].width;
+            canvas.height = ifds[0].height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return reject('Canvas context not available');
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            imageData.data.set(rgba);
+            ctx.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL());
+          } catch (e) {
+            reject('Erro ao processar TIFF: ' + e);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resolve(reader.result as string);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      }
     });
   }
 
