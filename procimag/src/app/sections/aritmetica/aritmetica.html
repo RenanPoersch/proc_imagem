@@ -1,1 +1,55 @@
-<p>aritmetica works!</p>
+<div class="grid grid-cols-3 gap-4 p-4 mt-2 items-start">
+  <div class="col-span-2">
+    <div class="grid grid-cols-2 gap-3">
+      <button class="w-full px-2 py-3 text-sm bg-white shadow-md rounded hover:shadow-lg transition">
+        Somar constante (+50 brilho)
+      </button>
+
+      <button class="w-full px-2 py-3 text-sm bg-white shadow-md rounded hover:shadow-lg transition">
+        Subtrair constante (−50 brilho)
+      </button>
+
+      <button class="w-full px-2 py-3 text-sm bg-white shadow-md rounded hover:shadow-lg transition">
+        Multiplicar por 1.5 (↑ contraste)
+      </button>
+
+      <button class="w-full px-2 py-3 text-sm bg-white shadow-md rounded hover:shadow-lg transition">
+        Dividir por 2 (↓ contraste)
+      </button>
+
+      <button class="w-full px-2 py-3 text-sm bg-white shadow-md rounded hover:shadow-lg transition">
+        Somar duas imagens
+      </button>
+
+      <button class="w-full px-2 py-3 text-sm bg-white shadow-md rounded hover:shadow-lg transition">
+        Subtrair duas imagens
+      </button>
+    </div>
+  </div>
+
+<div class="col-span-1">
+  <div class="flex-1 shadow-lg  flex flex-col items-center rounded"
+       style="max-width: 100%; height: auto;">
+
+    <div class="flex items-center justify-center overflow-hidden rounded" style="height: 200px;"
+         >
+      @if (imageService.getSecondaryImageDataUrl()) {
+        <img
+          [src]="imageService.getSecondaryImageDataUrl()"
+          alt="Imagem secundária"
+          class="object-contain"
+          style="max-width:200px; max-height:200px; height: 200px;"
+        />
+      }
+    </div>
+
+    <div class="w-full mt-0 rounded">
+      <label class="w-full block px-2 py-2 cursor-pointer text-center bg-zinc-200 hover:bg-zinc-300 transition"
+             >
+        <input type="file" (change)="onSecondaryFileSelected($event)" class="hidden" />
+        <span class="text-sm">Adicionar imagem secundária</span>
+      </label>
+    </div>
+  </div>
+</div>
+

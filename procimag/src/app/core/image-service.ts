@@ -40,16 +40,19 @@ type SniffInfo = {
 export class ImageService {
   private imageDataUrl: string | null = null;
   private metadata: ImageMetadata | null = null;
+  private secondaryImageDataUrl: string | null = null;
+  private setSecondaryImageDataUrl(dataUrl: string | null) { this.secondaryImageDataUrl = dataUrl; }
 
   getImageDataUrl(): string | null { return this.imageDataUrl; }
   setImageDataUrl(dataUrl: string | null) { this.imageDataUrl = dataUrl; }
   getMetadata(): ImageMetadata | null { return this.metadata; }
 
-  // -------------- NOVO: helpers para ler header -----------------
   private async readHead(file: File, n = 8192): Promise<Uint8Array> {
     const buf = await file.slice(0, n).arrayBuffer();
     return new Uint8Array(buf);
   }
+
+  getSecondaryImageDataUrl(): string | null { return this.secondaryImageDataUrl; }
 
   private parsePNG(head: Uint8Array): SniffInfo | null {
     // Assinatura PNG
@@ -382,5 +385,39 @@ export class ImageService {
       img.onerror = reject;
       img.src = imageDataUrl;
     });
+  }
+    async uploadSecondaryPhoto(file: File): Promise<string> {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+
+    // suporta TIFF como no principal, mas sem extrair metadata
+    if (ext === 'tif' || ext === 'tiff') {
+      const buf = await file.arrayBuffer();
+      const ifds = UTIF.decode(buf);
+      UTIF.decodeImage(buf, ifds[0]);
+      const rgba = UTIF.toRGBA8(ifds[0]);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = ifds[0].width; canvas.height = ifds[0].height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context not available');
+
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      imageData.data.set(rgba);
+      ctx.putImageData(imageData, 0, 0);
+
+      const dataUrl = canvas.toDataURL();
+      this.setSecondaryImageDataUrl(dataUrl);
+      return dataUrl;
+    }
+
+    // demais formatos: ler como DataURL direto
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+    this.setSecondaryImageDataUrl(dataUrl);
+    return dataUrl;
   }
 }

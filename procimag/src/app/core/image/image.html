@@ -46,46 +46,48 @@
 </div>
 
 <!-- HISTOGRAMAS -->
-<div class="mt-13 flex flex-row shadow-lg ml-5" style="max-width: max-content">
-  <div class="flex flex-col items-start">
-    <canvas #rCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
+  <div class="mt-13 flex flex-row shadow-lg ml-5" [class.hidden]="router.url !== '/dados'" style="max-width: max-content">
+    <div class="flex flex-col items-start">
+      <canvas #rCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
+    </div>
+    <div class="flex flex-col items-start">
+      <canvas #gCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
+    </div>
+    <div class="flex flex-col items-start">
+      <canvas #bCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
+    </div>
   </div>
-  <div class="flex flex-col items-start">
-    <canvas #gCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
-  </div>
-  <div class="flex flex-col items-start">
-    <canvas #bCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
-  </div>
-</div>
 
 <!-- METADADOS -->
-<div class="px-4 mt-6">
-  <div class="bg-white rounded shadow p-4" *ngIf="meta as m">
-    <h2 class="text-lg font-semibold mb-3">Metadados</h2>
+@if (router.url === '/dados') {
+  <div class="px-4 mt-6">
+    <div class="bg-white rounded shadow p-4" *ngIf="meta as m">
+      <h2 class="text-lg font-semibold mb-3">Metadados</h2>
 
-    <div class="grid grid-cols-2 gap-3 text-sm">
-      <div><span class="text-zinc-500">MIME:</span> {{ m.container.mime || '—' }}</div>
-      <div><span class="text-zinc-500">Extensão:</span> {{ m.container.extension || '—' }}</div>
-      <div>
-        <span class="text-zinc-500">Dimensões:</span>
-        {{ m.container.width }} × {{ m.container.height }}
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div><span class="text-zinc-500">MIME:</span> {{ m.container.mime || '—' }}</div>
+        <div><span class="text-zinc-500">Extensão:</span> {{ m.container.extension || '—' }}</div>
+        <div>
+          <span class="text-zinc-500">Dimensões:</span>
+          {{ m.container.width }} × {{ m.container.height }}
+        </div>
+        <div><span class="text-zinc-500">BitDepth:</span> {{ m.container.bitDepth || '—' }}</div>
+        <div><span class="text-zinc-500">Samples/Pixel:</span> {{ m.container.samplesPerPixel || '—' }}</div>
+        <div><span class="text-zinc-500">Color Space:</span> {{ m.container.colorSpace || '—' }}</div>
+        <div><span class="text-zinc-500">Compressão:</span> {{ m.container.compression || '—' }}</div>
+        <div><span class="text-zinc-500">Tem Alpha?</span> {{ m.computed?.hasAlpha ? 'Sim' : 'Não' }}</div>
       </div>
-      <div><span class="text-zinc-500">BitDepth:</span> {{ m.container.bitDepth || '—' }}</div>
-      <div><span class="text-zinc-500">Samples/Pixel:</span> {{ m.container.samplesPerPixel || '—' }}</div>
-      <div><span class="text-zinc-500">Color Space:</span> {{ m.container.colorSpace || '—' }}</div>
-      <div><span class="text-zinc-500">Compressão:</span> {{ m.container.compression || '—' }}</div>
-      <div><span class="text-zinc-500">Tem Alpha?</span> {{ m.computed?.hasAlpha ? 'Sim' : 'Não' }}</div>
-    </div>
 
-    <!-- Guard específico para as médias -->
-    <div class="mt-4 text-sm" *ngIf="m.computed?.mean as mean">
-      <h3 class="font-medium mb-2">Médias</h3>
-      <div class="grid grid-cols-4 gap-3">
-        <div><span class="text-zinc-500">R̄:</span> {{ mean.r | number:'1.0-1' }}</div>
-        <div><span class="text-zinc-500">Ḡ:</span> {{ mean.g | number:'1.0-1' }}</div>
-        <div><span class="text-zinc-500">B̄:</span> {{ mean.b | number:'1.0-1' }}</div>
-        <div><span class="text-zinc-500">Ā:</span> {{ mean.a | number:'1.0-1' }}</div>
+      <!-- Guard específico para as médias -->
+      <div class="mt-4 text-sm" *ngIf="m.computed?.mean as mean">
+        <h3 class="font-medium mb-2">Médias</h3>
+        <div class="grid grid-cols-4 gap-3">
+          <div><span class="text-zinc-500">R̄:</span> {{ mean.r | number:'1.0-1' }}</div>
+          <div><span class="text-zinc-500">Ḡ:</span> {{ mean.g | number:'1.0-1' }}</div>
+          <div><span class="text-zinc-500">B̄:</span> {{ mean.b | number:'1.0-1' }}</div>
+          <div><span class="text-zinc-500">Ā:</span> {{ mean.a | number:'1.0-1' }}</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+ }
