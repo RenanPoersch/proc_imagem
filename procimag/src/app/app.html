@@ -4,17 +4,40 @@
 
     <h1 class="text-xl 2xl:text-2xl font-semibold mb-4 2xl:mb-6">Proc. Imagem</h1>
 
-    <nav class="flex flex-col gap-1 2xl:gap-2">
-      <a routerLink="/dados" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Dados</a>
-      <a routerLink="/aritmetica" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Aritmética</a>
-      <a routerLink="/transformacoes" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Transformações</a>
-      <a routerLink="/segmentacao" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Segmentação</a>
-      <a routerLink="/morfologia" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Morfologia</a>
+   <nav class="flex flex-col gap-1 2xl:gap-2">
+      <a routerLink="/dados" 
+        routerLinkActive="bg-zinc-800 text-white"
+        class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">
+        Dados
+      </a>
+
+      <a routerLink="/aritmetica" 
+        routerLinkActive="bg-zinc-800 text-white"
+        class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">
+        Aritmética
+      </a>
+
+      <a routerLink="/transformacoes" 
+        routerLinkActive="bg-zinc-800 text-white"
+        class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">
+        Transformações
+      </a>
+
+      <a routerLink="/segmentacao" 
+        routerLinkActive="bg-zinc-800 text-white"
+        class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">
+        Segmentação
+      </a>
+
+      <a routerLink="/morfologia" 
+        routerLinkActive="bg-zinc-800 text-white"
+        class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">
+        Morfologia
+      </a>
     </nav>
   </aside>
 
   <main class="bg-zinc-50 h-full overflow-auto">
-    <!-- padding maior em 2xl -->
     <app-image class="block p-4 2xl:p-8" />
     <router-outlet></router-outlet>
   </main>
