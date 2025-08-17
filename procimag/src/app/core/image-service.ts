@@ -39,7 +39,7 @@ type SniffInfo = {
 @Injectable({ providedIn: 'root' })
 export class ImageService {
   private imageDataUrl: string | null = null;
-  private secondaryImageDataUrl: string | null = null;
+  private secondaryImageDataUrl: any = null;
   private editedImageDataUrl: string | null = null;
   private metadata: ImageMetadata | null = null;
 
@@ -476,8 +476,12 @@ export class ImageService {
 private async runOnImageData(
   editor: (imageData: ImageData, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => void | ImageData | Promise<void | ImageData>
 ): Promise<string | null> {
+
   const src = this.imageDataUrl ?? null;
-  if (!src) { console.warn('[runOnImageData] Sem imagem para processar.'); return null; }
+  if (!src) { 
+    console.warn('[runOnImageData] Sem imagem para processar.'); 
+    return null; 
+  }
 
   const img = await this.loadImage(src);
   const { canvas, ctx } = this.makeCanvas(img);
@@ -485,7 +489,10 @@ private async runOnImageData(
 
   let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const maybeNew = await editor(imageData, ctx, canvas);
-  if (maybeNew instanceof ImageData) imageData = maybeNew;
+
+  if (maybeNew instanceof ImageData) {
+    imageData = maybeNew;
+  }
 
   ctx.putImageData(imageData, 0, 0);
   const out = canvas.toDataURL();
@@ -509,4 +516,58 @@ private async runOnImageData(
       }
     });
   }
+
+  async addImage(percent: number, operation?: string): Promise<void> {
+    if (!this.secondaryImageDataUrl) {
+      console.warn('[addImage] Nenhuma imagem secundária carregada.');
+      return;
+    }
+
+    const k = percent / 100;
+
+    await this.runOnImageData(async (imageData, ctx) => {
+
+      const secImg = await this.loadImage(this.secondaryImageDataUrl);
+      const W = ctx.canvas.width, H = ctx.canvas.height;
+
+      const secCanvas = document.createElement('canvas');
+      secCanvas.width = W;
+      secCanvas.height = H;
+      const secCtx = secCanvas.getContext('2d');
+      if (!secCtx) throw new Error('Canvas context not available');
+
+      secCtx.drawImage(secImg, 0, 0, W, H);
+
+      const secData = secCtx.getImageData(0, 0, W, H).data;
+      const d = imageData.data;
+
+      if (operation === 'subtract') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(d[i]     - k * secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] - k * secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] - k * secData[i + 2]);
+        }
+      } else {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(d[i]     + k * secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] + k * secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] + k * secData[i + 2]);
+        }
+      }
+
+      return imageData;
+    });
+  }
+
+  async adjustContrast(factor: number): Promise<void> {
+    await this.runOnImageData((imageData) => {
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        d[i]     = this.limit8((d[i]     - 128) * factor + 128);
+        d[i + 1] = this.limit8((d[i + 1] - 128) * factor + 128);
+        d[i + 2] = this.limit8((d[i + 2] - 128) * factor + 128);
+      }
+    });
+  }
+
 }

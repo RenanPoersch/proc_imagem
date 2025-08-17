@@ -13,6 +13,9 @@ import { FormsModule } from '@angular/forms';
 
 export class Aritmetica {
   brilho: number = 0;
+  valorAdd: number = 50;
+  contrast: number = 0;
+   Math = Math;
 
   constructor(public imageService: ImageService) {}
 
@@ -28,5 +31,24 @@ export class Aritmetica {
       return;
     }
     await this.imageService.adjustBrightness(this.brilho);
+  }
+
+  async addImage(operation?: string) {
+    if (!this.imageService.hasProcessableImage) {
+      console.warn('Slider chamado sem imagem ainda.');
+      return;
+    }
+    await this.imageService.addImage(this.valorAdd, operation);
+  }
+
+  async onContrastChange() {
+    if (!this.imageService.hasProcessableImage) return;
+    const factor = this.contrastFactorFromSlider(this.contrast);
+    await this.imageService.adjustContrast(factor);
+  }
+
+  contrastFactorFromSlider(s: number): number {
+    const C = (s / 100) * 255; // agora em [-255, +255]
+    return (259 * (C + 255)) / (255 * (259 - C));
   }
 }
