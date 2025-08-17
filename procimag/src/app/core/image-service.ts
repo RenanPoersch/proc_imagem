@@ -551,6 +551,12 @@ private async runOnImageData(
           d[i + 1] = this.limit8(d[i + 1] - k * secData[i + 1]);
           d[i + 2] = this.limit8(d[i + 2] - k * secData[i + 2]);
         }
+      } else if (operation === 'modulo') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = Math.abs(d[i]     - k * secData[i]);
+          d[i + 1] = Math.abs(d[i + 1] - k * secData[i + 1]);
+          d[i + 2] = Math.abs(d[i + 2] - k * secData[i + 2]);
+        }
       } else {
         for (let i = 0; i < d.length; i += 4) {
           d[i]     = this.limit8(d[i]     + k * secData[i]);

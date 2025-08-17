@@ -12,10 +12,12 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class Aritmetica {
+  Math = Math;
+
   brilho: number = 0;
   valorAdd: number = 50;
   contrast: number = 0;
-   Math = Math;
+  modulo: boolean = false;
 
   constructor(public imageService: ImageService) {}
 
@@ -34,11 +36,12 @@ export class Aritmetica {
   }
 
   async addImage(operation?: string) {
+    const op = this.modulo ? 'modulo' : operation;
     if (!this.imageService.hasProcessableImage) {
       console.warn('Slider chamado sem imagem ainda.');
       return;
     }
-    await this.imageService.addImage(this.valorAdd, operation);
+    await this.imageService.addImage(this.valorAdd, op);
   }
 
   async onContrastChange() {

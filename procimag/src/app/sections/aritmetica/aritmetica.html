@@ -60,6 +60,16 @@
         />
         <span class="text-xs text-zinc-600 mt-1 text-center">{{ valorAdd }}%</span>
       </div>
+      <div class="flex flex-row items-center justify-center">
+        <input
+          type="checkbox"
+          id="modulo"
+          [(ngModel)]="modulo"
+          [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage"
+          class="w-5 h-5 accent-zinc-600 cursor-pointer disabled:cursor-not-allowed"
+        />
+        <label for="modulo" class="font-mediu ml-2">Módulo</label>
+      </div>
     </div>
   </div>
 
