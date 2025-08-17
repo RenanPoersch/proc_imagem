@@ -5,6 +5,15 @@ import * as UTIF from 'utif';
   providedIn: 'root'
 })
 export class ImageService {
+  private imageDataUrl: string | null = null;
+
+  getImageDataUrl(): string | null {
+    return this.imageDataUrl;
+  }
+
+  setImageDataUrl(dataUrl: string | null) {
+    this.imageDataUrl = dataUrl;
+  }
 
   uploadPhoto(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -24,7 +33,9 @@ export class ImageService {
             const imageData = ctx.createImageData(canvas.width, canvas.height);
             imageData.data.set(rgba);
             ctx.putImageData(imageData, 0, 0);
-            resolve(canvas.toDataURL());
+            const dataUrl = canvas.toDataURL();
+            this.setImageDataUrl(dataUrl);
+            resolve(dataUrl);
           } catch (e) {
             reject('Erro ao processar TIFF: ' + e);
           }
@@ -34,7 +45,9 @@ export class ImageService {
       } else {
         const reader = new FileReader();
         reader.onload = () => {
-          resolve(reader.result as string);
+          const dataUrl = reader.result as string;
+          this.setImageDataUrl(dataUrl);
+          resolve(dataUrl);
         };
         reader.onerror = reject;
         reader.readAsDataURL(file);

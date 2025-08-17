@@ -11,7 +11,6 @@ import { ImageService } from '../image-service';
   providers: [ImageService]
 })
 export class Image implements AfterViewInit {
-  imageDataUrl: string | null = null;
   afterImageDataUrl: string | null = null;
   rMatrix: number[][] = [];
   gMatrix: number[][] = [];
@@ -21,7 +20,7 @@ export class Image implements AfterViewInit {
   @ViewChild('gCanvas') gCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('bCanvas') bCanvas!: ElementRef<HTMLCanvasElement>;
 
-  constructor(private imageService: ImageService) {}
+  constructor(public imageService: ImageService) {}
 
   ngAfterViewInit() {}
 
@@ -29,7 +28,6 @@ export class Image implements AfterViewInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       this.imageService.uploadPhoto(file).then(dataUrl => {
-        this.imageDataUrl = dataUrl;
         this.imageService.extractColorMatrices(dataUrl).then(({ r, g, b }) => {
           this.rMatrix = r;
           this.gMatrix = g;
@@ -70,7 +68,7 @@ export class Image implements AfterViewInit {
         hist[matrix[y][x]]++;
       }
     }
-    const max = Math.max(...hist);
+    const max = Math.max(...hist) * 1.2;
     const width = canvas.width;
     const height = canvas.height;
 
