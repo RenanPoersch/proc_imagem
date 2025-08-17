@@ -63,6 +63,10 @@ export class ImageService {
     return !!this.imageDataUrl;
   }
 
+  get hasProcessableSecImage(): boolean {
+    return !!this.secondaryImageDataUrl;
+  }
+
   uploadPhoto(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const ext = file.name.split('.').pop()?.toLowerCase();

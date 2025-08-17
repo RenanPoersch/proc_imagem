@@ -35,13 +35,13 @@
     </span>
     </div>
 
-      <button (click)="addImage()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+      <button (click)="addImage()" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Somar duas imagens
       </button>
 
-      <button (click)="addImage('subtract')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+      <button (click)="addImage('subtract')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Subtrair duas imagens
