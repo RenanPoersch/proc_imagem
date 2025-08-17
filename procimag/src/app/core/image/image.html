@@ -1,4 +1,5 @@
 <div class="flex h-1/2 gap-x-6 p-4">
+  <!-- PREVIEW ORIGINAL -->
   <div class="flex-1 bg-white shadow-lg min-h-0 flex flex-col" style="max-width: 100%; height: 500px;">
     <div class="flex-1 flex flex-col overflow-hidden">
       <img
@@ -17,6 +18,7 @@
     </div>
   </div>
 
+  <!-- PREVIEW PROCESSADA -->
   <div class="flex-1 bg-white shadow-lg min-h-0 flex flex-col" style="max-width: 100%; height: 500px;">
     <div class="flex-1 flex flex-col overflow-hidden">
       <img
@@ -42,14 +44,48 @@
     </div>
   </div>
 </div>
-<div class="mt-13 flex flex-row px-4 shadow-lg"  style="max-width: 49%;">
+
+<!-- HISTOGRAMAS -->
+<div class="mt-13 flex flex-row shadow-lg ml-5" style="max-width: max-content">
   <div class="flex flex-col items-start">
-    <canvas #rCanvas width="267.5" height="100" class="bg-zinc-100 rounded"></canvas>
+    <canvas #rCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
   </div>
   <div class="flex flex-col items-start">
-    <canvas #gCanvas width="267.5" height="100" class="bg-zinc-100 rounded"></canvas>
+    <canvas #gCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
   </div>
   <div class="flex flex-col items-start">
-    <canvas #bCanvas width="267.5" height="100" class="bg-zinc-100 rounded"></canvas>
+    <canvas #bCanvas width="260" height="120" class="bg-zinc-100 rounded"></canvas>
+  </div>
+</div>
+
+<!-- METADADOS -->
+<div class="px-4 mt-6">
+  <div class="bg-white rounded shadow p-4" *ngIf="meta as m">
+    <h2 class="text-lg font-semibold mb-3">Metadados</h2>
+
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div><span class="text-zinc-500">MIME:</span> {{ m.container.mime || '—' }}</div>
+      <div><span class="text-zinc-500">Extensão:</span> {{ m.container.extension || '—' }}</div>
+      <div>
+        <span class="text-zinc-500">Dimensões:</span>
+        {{ m.container.width }} × {{ m.container.height }}
+      </div>
+      <div><span class="text-zinc-500">BitDepth:</span> {{ m.container.bitDepth || '—' }}</div>
+      <div><span class="text-zinc-500">Samples/Pixel:</span> {{ m.container.samplesPerPixel || '—' }}</div>
+      <div><span class="text-zinc-500">Color Space:</span> {{ m.container.colorSpace || '—' }}</div>
+      <div><span class="text-zinc-500">Compressão:</span> {{ m.container.compression || '—' }}</div>
+      <div><span class="text-zinc-500">Tem Alpha?</span> {{ m.computed?.hasAlpha ? 'Sim' : 'Não' }}</div>
+    </div>
+
+    <!-- Guard específico para as médias -->
+    <div class="mt-4 text-sm" *ngIf="m.computed?.mean as mean">
+      <h3 class="font-medium mb-2">Médias</h3>
+      <div class="grid grid-cols-4 gap-3">
+        <div><span class="text-zinc-500">R̄:</span> {{ mean.r | number:'1.0-1' }}</div>
+        <div><span class="text-zinc-500">Ḡ:</span> {{ mean.g | number:'1.0-1' }}</div>
+        <div><span class="text-zinc-500">B̄:</span> {{ mean.b | number:'1.0-1' }}</div>
+        <div><span class="text-zinc-500">Ā:</span> {{ mean.a | number:'1.0-1' }}</div>
+      </div>
+    </div>
   </div>
 </div>
