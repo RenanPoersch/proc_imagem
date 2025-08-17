@@ -1,19 +1,21 @@
-<div class="h-screen w-screen grid grid-cols-[260px_1fr]">
-  <aside class="bg-zinc-900 text-zinc-100 p-4 flex flex-col gap-2
-              relative z-10 shadow-[12px_0_24px_-12px_rgba(0,0,0,0.45)]">
-  <div class="pointer-events-none absolute top-0 right-0 h-full w-3
-              bg-gradient-to-l from-black/10 to-transparent"></div>
-    <h1 class="text-xl font-semibold mb-4">Proc. Imagem</h1>
-    <nav class="flex flex-col gap-1">
-      <a routerLink="/dados" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Dados</a>
-      <a routerLink="/aritmetica" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Aritmética</a>
-      <a routerLink="/transformacoes" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Transformações</a>
-      <a routerLink="/segmentacao" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Segmentação</a>
-      <a routerLink="/morfologia" class="px-3 py-2 rounded hover:bg-zinc-800 cursor-pointer">Morfologia</a>
+<div class="h-screen w-screen grid grid-cols-[300px_1fr] 2xl:grid-cols-[360px_1fr]">
+  <aside class="bg-zinc-900 text-zinc-100 p-5 2xl:p-8 flex flex-col gap-2 relative z-10 shadow-[12px_0_24px_-12px_rgba(0,0,0,0.45)]">
+    <div class="pointer-events-none absolute top-0 right-0 h-full w-3 bg-gradient-to-l from-black/10 to-transparent"></div>
+
+    <h1 class="text-xl 2xl:text-2xl font-semibold mb-4 2xl:mb-6">Proc. Imagem</h1>
+
+    <nav class="flex flex-col gap-1 2xl:gap-2">
+      <a routerLink="/dados" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Dados</a>
+      <a routerLink="/aritmetica" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Aritmética</a>
+      <a routerLink="/transformacoes" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Transformações</a>
+      <a routerLink="/segmentacao" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Segmentação</a>
+      <a routerLink="/morfologia" class="px-3 2xl:px-4 py-2 2xl:py-3 rounded hover:bg-zinc-800 cursor-pointer text-sm 2xl:text-base">Morfologia</a>
     </nav>
   </aside>
+
   <main class="bg-zinc-50 h-full overflow-auto">
-    <app-image class="p-4"/> 
+    <!-- padding maior em 2xl -->
+    <app-image class="block p-4 2xl:p-8" />
     <router-outlet></router-outlet>
   </main>
 </div>

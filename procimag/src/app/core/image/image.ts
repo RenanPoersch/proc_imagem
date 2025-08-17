@@ -9,10 +9,8 @@ import { Router } from '@angular/router';
   imports: [CommonModule],
   templateUrl: './image.html',
   styleUrl: './image.css',
-  providers: [ImageService]
 })
 export class Image implements AfterViewInit {
-  afterImageDataUrl: string | null = null;
 
   rMatrix: number[][] = [];
   gMatrix: number[][] = [];
@@ -37,10 +35,10 @@ export class Image implements AfterViewInit {
 
     const dataUrl = await this.imageService.uploadPhoto(file);
 
-    const { r, g, b } = await this.imageService.extractColorMatrices(dataUrl);
-    this.rMatrix = r;
-    this.gMatrix = g;
-    this.bMatrix = b;
+    await this.imageService.extractColorMatrices(dataUrl);
+    this.rMatrix = this.imageService.getRMatrix();
+    this.gMatrix = this.imageService.getGMatrix();
+    this.bMatrix = this.imageService.getBMatrix();
 
     // 3) extrai metadados completos (EXIF/IPTC/XMP/TIFF + derivados: hist/means/alpha)
     //    (se você já chamou isso dentro do uploadPhoto, pode só this.meta = this.imageService.getMetadata();)
