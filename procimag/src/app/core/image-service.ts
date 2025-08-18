@@ -521,53 +521,51 @@ private async runOnImageData(
     });
   }
 
-  async addImage(percent: number, operation?: string): Promise<void> {
+  async addImage(percent: { a: number; b: number }, op?: string): Promise<void> {
     if (!this.secondaryImageDataUrl) {
       console.warn('[addImage] Nenhuma imagem secundária carregada.');
       return;
     }
-
-    const k = percent / 100;
+    const k  = percent.a / 100; 
+    const k2 = percent.b / 100; 
 
     await this.runOnImageData(async (imageData, ctx) => {
-
       const secImg = await this.loadImage(this.secondaryImageDataUrl);
       const W = ctx.canvas.width, H = ctx.canvas.height;
 
       const secCanvas = document.createElement('canvas');
-      secCanvas.width = W;
-      secCanvas.height = H;
+      secCanvas.width = W; secCanvas.height = H;
+
       const secCtx = secCanvas.getContext('2d');
       if (!secCtx) throw new Error('Canvas context not available');
 
       secCtx.drawImage(secImg, 0, 0, W, H);
-
       const secData = secCtx.getImageData(0, 0, W, H).data;
       const d = imageData.data;
 
-      if (operation === 'subtract') {
+      if (op === 'subtract') {
         for (let i = 0; i < d.length; i += 4) {
-          d[i]     = this.limit8(d[i]     - k * secData[i]);
-          d[i + 1] = this.limit8(d[i + 1] - k * secData[i + 1]);
-          d[i + 2] = this.limit8(d[i + 2] - k * secData[i + 2]);
+          d[i]     = this.limit8(d[i]     * k - k2 * secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] * k - k2 * secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] * k - k2 * secData[i + 2]);
         }
-      } else if (operation === 'modulo') {
+      } else if (op === 'modulo') {
         for (let i = 0; i < d.length; i += 4) {
-          d[i]     = Math.abs(d[i]     - k * secData[i]);
-          d[i + 1] = Math.abs(d[i + 1] - k * secData[i + 1]);
-          d[i + 2] = Math.abs(d[i + 2] - k * secData[i + 2]);
+          d[i]     = this.limit8(Math.abs(d[i]     * k - k2 * secData[i]));
+          d[i + 1] = this.limit8(Math.abs(d[i + 1] * k - k2 * secData[i + 1]));
+          d[i + 2] = this.limit8(Math.abs(d[i + 2] * k - k2 * secData[i + 2]));
         }
-      } else {
+      } else if(op === 'add') {
         for (let i = 0; i < d.length; i += 4) {
-          d[i]     = this.limit8(d[i]     + k * secData[i]);
-          d[i + 1] = this.limit8(d[i + 1] + k * secData[i + 1]);
-          d[i + 2] = this.limit8(d[i + 2] + k * secData[i + 2]);
+          d[i]     = this.limit8(d[i]     * k + k2 * secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] * k + k2 * secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] * k + k2 * secData[i + 2]);
         }
       }
-
       return imageData;
     });
   }
+
 
   async adjustContrast(factor: number): Promise<void> {
     await this.runOnImageData((imageData) => {

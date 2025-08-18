@@ -15,7 +15,8 @@ export class Aritmetica {
   Math = Math;
 
   brilho: number = 0;
-  valorAdd: number = 50;
+  valorAddA: number = 50;
+  valorAddB: number = 50;
   contrast: number = 0;
   modulo: boolean = false;
 
@@ -36,12 +37,12 @@ export class Aritmetica {
   }
 
   async addImage(operation?: string) {
-    const op = this.modulo ? 'modulo' : operation;
+    const op = this.modulo && operation != 'add' ? 'modulo' : operation;
     if (!this.imageService.hasProcessableImage) {
       console.warn('Slider chamado sem imagem ainda.');
       return;
     }
-    await this.imageService.addImage(this.valorAdd, op);
+    await this.imageService.addImage({a: this.valorAddA, b: this.valorAddB}, op);
   }
 
   async onContrastChange() {
@@ -51,7 +52,7 @@ export class Aritmetica {
   }
 
   contrastFactorFromSlider(s: number): number {
-    const C = (s / 100) * 255; // agora em [-255, +255]
+    const C = (s / 100) * 255;
     return (259 * (C + 255)) / (255 * (259 - C));
   }
 }
