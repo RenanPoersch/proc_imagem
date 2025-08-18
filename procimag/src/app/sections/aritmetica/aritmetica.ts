@@ -15,8 +15,8 @@ export class Aritmetica {
   Math = Math;
 
   brilho: number = 0;
-  valorAddA: number = 50;
-  valorAddB: number = 50;
+  valorAddA: number = 100;
+  valorAddB: number = 100;
   contrast: number = 0;
 
   constructor(public imageService: ImageService) {}
