@@ -583,4 +583,26 @@ private async runOnImageData(
     });
   }
 
+
+  
+ // ╔══════════════════╗
+ // ║   GEOMETRICA     ║
+ // ╚══════════════════╝
+
+ async flipImage(direction: 'hor' | 'ver'): Promise<void> {
+  await this.runOnImageData((imageData, ctx, canvas) => {
+    const d = imageData.data;
+    const width = canvas.width;
+    if (direction === 'hor') {
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < width / 2; x++) {
+          const idx1 = (y * width + x) * 4;
+          const idx2 = (y * width + (width - 1 - x)) * 4;
+          for (let c = 0; c < 4; c++) {
+            [d[idx1 + c], d[idx2 + c]] = [d[idx2 + c], d[idx1 + c]];
+          }
+        }
+      }
+    }
+  })}
 }

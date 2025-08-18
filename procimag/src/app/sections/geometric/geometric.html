@@ -1,1 +1,19 @@
-<p>geometric works!</p>
+<div class="grid grid-cols-1 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
+  <div class="col-span-2">
+    <div class="grid grid-cols-1 gap-3">
+
+      <button (click)="flip('hor')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-125 px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+         disabled:bg-zinc-200 disabled:text-zinc-400 
+         disabled:cursor-not-allowed">
+        Inverter horizontal
+      </button>
+
+      <button (click)="flip('ver')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-125 px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+         disabled:bg-zinc-200 disabled:text-zinc-400 
+         disabled:cursor-not-allowed">
+        Inverter vertical
+      </button>
+    </div>
+  </div>
+</div>
+
