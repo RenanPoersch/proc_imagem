@@ -18,7 +18,6 @@ export class Aritmetica {
   valorAddA: number = 50;
   valorAddB: number = 50;
   contrast: number = 0;
-  modulo: boolean = false;
 
   constructor(public imageService: ImageService) {}
 
@@ -37,12 +36,11 @@ export class Aritmetica {
   }
 
   async addImage(operation?: string) {
-    const op = this.modulo && operation != 'add' ? 'modulo' : operation;
     if (!this.imageService.hasProcessableImage) {
       console.warn('Slider chamado sem imagem ainda.');
       return;
     }
-    await this.imageService.addImage({a: this.valorAddA, b: this.valorAddB}, op);
+    await this.imageService.addImage({a: this.valorAddA, b: this.valorAddB}, operation);
   }
 
   async onContrastChange() {

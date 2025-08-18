@@ -561,19 +561,24 @@ private async runOnImageData(
           d[i + 1] = this.limit8(d[i + 1] * k + k2 * secData[i + 1]);
           d[i + 2] = this.limit8(d[i + 2] * k + k2 * secData[i + 2]);
         }
+      } else if(op === 'media') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(d[i]     * k + k2 * secData[i]) / 2 ;
+          d[i + 1] = this.limit8(d[i + 1] * k + k2 * secData[i + 1]) / 2;
+          d[i + 2] = this.limit8(d[i + 2] * k + k2 * secData[i + 2]) / 2;
+        }
       }
       return imageData;
     });
   }
 
-
   async adjustContrast(factor: number): Promise<void> {
     await this.runOnImageData((imageData) => {
       const d = imageData.data;
       for (let i = 0; i < d.length; i += 4) {
-        d[i]     = this.limit8((d[i]     - 128) * factor + 128);
-        d[i + 1] = this.limit8((d[i + 1] - 128) * factor + 128);
-        d[i + 2] = this.limit8((d[i + 2] - 128) * factor + 128);
+        d[i]     = this.limit8((d[i]    ) * factor);
+        d[i + 1] = this.limit8((d[i + 1]) * factor);
+        d[i + 2] = this.limit8((d[i + 2]) * factor);
       }
     });
   }

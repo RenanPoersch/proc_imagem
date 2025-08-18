@@ -35,10 +35,16 @@
     </span>
     </div>
 
-      <button (click)="addImage('add')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage || modulo" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+      <button (click)="addImage('add')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Somar duas imagens
+      </button>
+
+      <button (click)="addImage('media')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+         disabled:bg-zinc-200 disabled:text-zinc-400 
+         disabled:cursor-not-allowed">
+        Média linear
       </button>
 
       <button (click)="addImage('subtract')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
@@ -46,8 +52,15 @@
          disabled:cursor-not-allowed">
         Subtrair duas imagens
       </button>
+
+     <button (click)="addImage('modulo')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+         disabled:bg-zinc-200 disabled:text-zinc-400 
+         disabled:cursor-not-allowed">
+        Subtrair em módulo
+      </button>
+
       <div class="flex flex-col bg-white shadow-md rounded p-3">
-        <label for="brilho" class=" font-mediu mb-2">Valor A</label>
+        <label for="brilho" class=" font-mediu mb-2">Valor blending A</label>
         <input
           type="range"
           min="0"
@@ -61,7 +74,7 @@
         <span class="text-xs text-zinc-600 mt-1 text-center">{{ valorAddA }}%</span>
       </div>
        <div class="flex flex-col bg-white shadow-md rounded p-3">
-        <label for="brilho" class=" font-mediu mb-2">Valor B</label>
+        <label for="brilho" class=" font-mediu mb-2">Valor blending B</label>
         <input
           type="range"
           min="0"
@@ -73,16 +86,6 @@
           disabled:cursor-not-allowed"
         />
         <span class="text-xs text-zinc-600 mt-1 text-center">{{ valorAddB }}%</span>
-      </div>
-      <div class="flex flex-row items-center justify-center">
-        <input
-          type="checkbox"
-          id="modulo"
-          [(ngModel)]="modulo"
-          [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage"
-          class="w-5 h-5 accent-zinc-600 cursor-pointer disabled:cursor-not-allowed"
-        />
-        <label for="modulo" class="font-mediu ml-2">Módulo</label>
       </div>
     </div>
   </div>
