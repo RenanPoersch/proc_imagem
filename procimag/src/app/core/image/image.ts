@@ -100,6 +100,10 @@ export class Image implements AfterViewInit {
     }
   }
 
+  onKeepImage() {
+    this.imageService.setImageDataUrl(this.imageService.getEditedImageDataUrl());
+  }
+
   greenPrint() { console.log('Green Matrix:', this.gMatrix); }
   redPrint()   { console.log('Red Matrix:', this.rMatrix); }
   bluePrint()  { console.log('Blue Matrix:', this.bMatrix); }
