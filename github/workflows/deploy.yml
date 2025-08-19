@@ -1,0 +1,52 @@
+name: Deploy Angular to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]     # troque se você usa outra branch
+  workflow_dispatch:       # permite rodar manualmente
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'          # opcional: cache de dependências
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build Angular
+        run: |
+          # Se seu site é servido em https://usuario.github.io/<repo>/
+          # defina o base-href para carregar assets corretamente:
+          npm run build -- --base-href="/proc_imagem/"
+          # Se for em domínio raiz (usuario.github.io), use --base-href="/" ou remova.
+          touch docs/browser/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/browser     # <- sua build sai aqui (novo builder)
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

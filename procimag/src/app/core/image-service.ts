@@ -469,51 +469,6 @@ export class ImageService {
     return x < 0 ? 0 : x > 255 ? 255 : x | 0; 
   }
 
-  async extractColorMatricesFromImageDataUrl(dataUrl: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject('Canvas context not available');
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, img.width, img.height);
-      const d = imageData.data;
-
-      const r: number[][] = [];
-      const g: number[][] = [];
-      const b: number[][] = [];
-
-      for (let y = 0; y < img.height; y++) {
-        r[y] = [];
-        g[y] = [];
-        b[y] = [];
-        for (let x = 0; x < img.width; x++) {
-          const idx = (y * img.width + x) * 4;
-          r[y][x] = d[idx];     // Red
-          g[y][x] = d[idx + 1]; // Green
-          b[y][x] = d[idx + 2]; // Blue
-        }
-      }
-
-      this.rMatrix = r;
-      this.gMatrix = g;
-      this.bMatrix = b;
-
-      resolve();
-    };
-    img.onerror = reject;
-    img.src = dataUrl;
-  });
-}
-
-
 /**
  * Abre uma imagem (dataURL ou URL), cria canvas+ctx, entrega ImageData para edição
  * e salva o resultado retornado pelo editor.
