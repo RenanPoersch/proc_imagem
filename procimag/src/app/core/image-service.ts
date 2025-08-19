@@ -469,6 +469,51 @@ export class ImageService {
     return x < 0 ? 0 : x > 255 ? 255 : x | 0; 
   }
 
+  async extractColorMatricesFromImageDataUrl(dataUrl: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject('Canvas context not available');
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, img.width, img.height);
+      const d = imageData.data;
+
+      const r: number[][] = [];
+      const g: number[][] = [];
+      const b: number[][] = [];
+
+      for (let y = 0; y < img.height; y++) {
+        r[y] = [];
+        g[y] = [];
+        b[y] = [];
+        for (let x = 0; x < img.width; x++) {
+          const idx = (y * img.width + x) * 4;
+          r[y][x] = d[idx];     // Red
+          g[y][x] = d[idx + 1]; // Green
+          b[y][x] = d[idx + 2]; // Blue
+        }
+      }
+
+      this.rMatrix = r;
+      this.gMatrix = g;
+      this.bMatrix = b;
+
+      resolve();
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+
 /**
  * Abre uma imagem (dataURL ou URL), cria canvas+ctx, entrega ImageData para edição
  * e salva o resultado retornado pelo editor.
@@ -583,26 +628,37 @@ private async runOnImageData(
     });
   }
 
-
-  
  // ╔══════════════════╗
  // ║   GEOMETRICA     ║
  // ╚══════════════════╝
 
- async flipImage(direction: 'hor' | 'ver'): Promise<void> {
-  await this.runOnImageData((imageData, ctx, canvas) => {
-    const d = imageData.data;
-    const width = canvas.width;
-    if (direction === 'hor') {
-      for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < width / 2; x++) {
-          const idx1 = (y * width + x) * 4;
-          const idx2 = (y * width + (width - 1 - x)) * 4;
-          for (let c = 0; c < 4; c++) {
-            [d[idx1 + c], d[idx2 + c]] = [d[idx2 + c], d[idx1 + c]];
-          }
+  async flipImage(direction: 'hor' | 'ver'): Promise<void> {
+
+    await this.runOnImageData((imageData, ctx, canvas) => {
+      const width = canvas.width;
+      const height = canvas.height;
+      const src = imageData.data;
+      
+      const array = new Uint8ClampedArray(src.length);
+
+      for (let x = 0; x < height; x++) {
+        for (let j = 0; j < width; j++) {
+          const srcIdx = (x * width + j) * 4;
+
+          let destinyX = direction === 'hor' ? width - j - 1 : j;
+          let destinyY = direction === 'ver' ? height - x - 1 : x;
+
+          const destIdx = (destinyY * width + destinyX) * 4;
+
+          array[destIdx]     = src[srcIdx];    
+          array[destIdx + 1] = src[srcIdx + 1]; 
+          array[destIdx + 2] = src[srcIdx + 2]; 
+          array[destIdx + 3] = src[srcIdx + 3]; 
         }
       }
-    }
-  })}
+
+      return new ImageData(array, width, height);
+
+    });
+  }
 }

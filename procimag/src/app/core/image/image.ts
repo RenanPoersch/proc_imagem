@@ -29,6 +29,22 @@ export class Image implements AfterViewInit {
   
   ngAfterViewInit() {}
 
+  ngOnInit() {
+    fetch('assets/Add2.jpg')
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], 'Add2.jpg', { type: blob.type });
+        return this.imageService.uploadPhoto(file);
+      })
+      .then(dataUrl => {
+        console.log('Imagem carregada com sucesso!', dataUrl);
+      })
+      .catch(error => {
+        console.error('Erro ao carregar imagem:', error);
+      });
+
+  }
+
   async onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
