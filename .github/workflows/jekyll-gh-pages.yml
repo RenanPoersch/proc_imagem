@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: procimag   # roda tudo dentro de procimag/
+        working-directory: procimag
 
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,6 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          # IMPORTANTE: aponte para o lock DENTRO de procimag
           cache-dependency-path: procimag/package-lock.json
 
       - name: Install deps
@@ -39,10 +38,18 @@ jobs:
           npm run build -- --base-href="/proc_imagem/"
           touch docs/browser/.nojekyll
 
+      - name: Debug build output
+        run: |
+          pwd
+          ls -la
+          ls -la docs || true
+          ls -la docs/browser || true
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/browser
+          path: procimag/docs/browser
+
 
   deploy:
     needs: build
