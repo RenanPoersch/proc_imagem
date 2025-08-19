@@ -14,6 +14,22 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+name: Deploy Angular to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]     # troque se você usa outra branch
+  workflow_dispatch:       # permite rodar manualmente
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
