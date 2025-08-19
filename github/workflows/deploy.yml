@@ -1,0 +1,50 @@
+name: Deploy Angular to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]     # troque se você usa outra branch
+  workflow_dispatch:       # permite rodar manualmente
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: procimag   # 👈 entra na pasta
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'procimag/package-lock.json'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build Angular
+        run: |
+          npm run build -- --base-href="/proc_imagem/"
+          touch docs/browser/.nojekyll
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
