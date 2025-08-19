@@ -36,6 +36,7 @@
     "@angular/build": "^20.1.5",
     "@angular/cli": "^20.1.5",
     "@angular/compiler-cli": "^20.1.0",
+    "@tailwindcss/postcss": "^4.1.12",
     "@types/jasmine": "~5.1.0",
     "@types/utif": "^3.0.5",
     "jasmine-core": "~5.8.0",
@@ -44,6 +45,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "tailwindcss": "^4.1.12",
     "typescript": "~5.8.2"
   }
 }
