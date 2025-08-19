@@ -46,7 +46,7 @@ export class ImageService {
   private rMatrix: number[][] = [];
   private gMatrix: number[][] = [];
   private bMatrix: number[][] = [];
-  
+
   getImageDataUrl(): string | null { return this.imageDataUrl; }
   getSecondaryImageDataUrl(): string | null { return this.secondaryImageDataUrl; }
   getEditedImageDataUrl(): string | null { return this.editedImageDataUrl; }
@@ -54,7 +54,7 @@ export class ImageService {
   getRMatrix(): number[][] { return this.rMatrix; }
   getGMatrix(): number[][] { return this.gMatrix; }
   getBMatrix(): number[][] { return this.bMatrix; }
-  
+
   setImageDataUrl(dataUrl: string | null) { this.imageDataUrl = dataUrl; }
   setSecondaryImageDataUrl(dataUrl: string | null) { this.secondaryImageDataUrl = dataUrl; }
   setEditedImageDataUrl(dataUrl: string | null) { this.editedImageDataUrl = dataUrl; }
@@ -305,7 +305,7 @@ export class ImageService {
       img.src = url;
     });
   }
-  
+
   private async canvasFromDataURL(dataUrl: string): Promise<{
     ctx: CanvasRenderingContext2D | null; width: number; height: number;
   }> {
@@ -452,7 +452,7 @@ export class ImageService {
       const img = new Image();
       img.onload = () => resolve(img);
       img.onerror = (e) => reject(e);
-      img.src = src; 
+      img.src = src;
     });
   }
 
@@ -465,8 +465,8 @@ export class ImageService {
     return { canvas, ctx };
   }
 
-  private limit8(x: number) { 
-    return x < 0 ? 0 : x > 255 ? 255 : x | 0; 
+  private limit8(x: number) {
+    return x < 0 ? 0 : x > 255 ? 255 : x | 0;
   }
 
 /**
@@ -482,9 +482,9 @@ private async runOnImageData(
 ): Promise<string | null> {
 
   const src = this.imageDataUrl ?? null;
-  if (!src) { 
-    console.warn('[runOnImageData] Sem imagem para processar.'); 
-    return null; 
+  if (!src) {
+    console.warn('[runOnImageData] Sem imagem para processar.');
+    return null;
   }
 
   const img = await this.loadImage(src);
@@ -510,14 +510,22 @@ private async runOnImageData(
  // ╚══════════════════╝
 
 
-  async adjustBrightness(brightness: number): Promise<void> {
+  async adjustBrightness(brightness: number, op: string | null): Promise<void> {
     await this.runOnImageData((imageData) => {
       const d = imageData.data;
+    if(op) {
+       for (let i = 0; i < d.length; i += 4) {
+        d[i]     = this.limit8(d[i]     * brightness);
+        d[i + 1] = this.limit8(d[i + 1] * brightness);
+        d[i + 2] = this.limit8(d[i + 2] * brightness);
+      }
+    } else {
       for (let i = 0; i < d.length; i += 4) {
         d[i]     = this.limit8(d[i]     + brightness);
         d[i + 1] = this.limit8(d[i + 1] + brightness);
         d[i + 2] = this.limit8(d[i + 2] + brightness);
       }
+    }
     });
   }
 
@@ -526,8 +534,8 @@ private async runOnImageData(
       console.warn('[addImage] Nenhuma imagem secundária carregada.');
       return;
     }
-    const k  = percent.a / 100; 
-    const k2 = percent.b / 100; 
+    const k  = percent.a / 100;
+    const k2 = percent.b / 100;
 
     await this.runOnImageData(async (imageData, ctx) => {
       const secImg = await this.loadImage(this.secondaryImageDataUrl);
@@ -576,9 +584,9 @@ private async runOnImageData(
     await this.runOnImageData((imageData) => {
       const d = imageData.data;
       for (let i = 0; i < d.length; i += 4) {
-        d[i]     = this.limit8((d[i]    ) * factor);
-        d[i + 1] = this.limit8((d[i + 1]) * factor);
-        d[i + 2] = this.limit8((d[i + 2]) * factor);
+        d[i]     = this.limit8((d[i]     - 128) * factor + 128);
+        d[i + 1] = this.limit8((d[i + 1] - 128) * factor + 128);
+        d[i + 2] = this.limit8((d[i + 2] - 128) * factor + 128);
       }
     });
   }
@@ -593,7 +601,7 @@ private async runOnImageData(
       const width = canvas.width;
       const height = canvas.height;
       const src = imageData.data;
-      
+
       const array = new Uint8ClampedArray(src.length);
 
       for (let x = 0; x < height; x++) {
@@ -605,10 +613,10 @@ private async runOnImageData(
 
           const destIdx = (destinyY * width + destinyX) * 4;
 
-          array[destIdx]     = src[srcIdx];    
-          array[destIdx + 1] = src[srcIdx + 1]; 
-          array[destIdx + 2] = src[srcIdx + 2]; 
-          array[destIdx + 3] = src[srcIdx + 3]; 
+          array[destIdx]     = src[srcIdx];
+          array[destIdx + 1] = src[srcIdx + 1];
+          array[destIdx + 2] = src[srcIdx + 2];
+          array[destIdx + 3] = src[srcIdx + 3];
         }
       }
 

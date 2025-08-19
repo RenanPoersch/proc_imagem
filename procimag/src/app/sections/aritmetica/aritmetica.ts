@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ImageService } from '../../core/image-service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-aritmetica',
@@ -21,36 +21,35 @@ export class Aritmetica {
 
   constructor(public imageService: ImageService) {}
 
-  async onSecondaryFileSelected(event: Event) {
+  contrastFactorFromSlider(value: number): number {
+    return 1 + (value / 100) * 2;
+  }
+
+  onSecondaryFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    await this.imageService.uploadSecondaryPhoto(file);
+    this.imageService.uploadSecondaryPhoto(file);
   }
 
-  async onBrightnessChange() {
+  onBrightnessChange(x?: number) {
     if (!this.imageService.hasProcessableImage) {
       console.warn('Slider chamado sem imagem ainda.');
       return;
     }
-    await this.imageService.adjustBrightness(this.brilho);
+    this.imageService.adjustBrightness(x ? x : this.brilho, x ? 'x' : null);
   }
 
-  async addImage(operation?: string) {
+  addImage(operation?: string) {
     if (!this.imageService.hasProcessableImage) {
       console.warn('Slider chamado sem imagem ainda.');
       return;
     }
-    await this.imageService.addImage({a: this.valorAddA, b: this.valorAddB}, operation);
+    this.imageService.addImage({a: this.valorAddA, b: this.valorAddB}, operation);
   }
 
-  async onContrastChange() {
+  onContrastChange() {
     if (!this.imageService.hasProcessableImage) return;
     const factor = this.contrastFactorFromSlider(this.contrast);
-    await this.imageService.adjustContrast(factor);
-  }
-
-  contrastFactorFromSlider(s: number): number {
-    const C = (s / 100) * 255;
-    return (259 * (C + 255)) / (255 * (259 - C));
+    this.imageService.adjustContrast(factor);
   }
 }
