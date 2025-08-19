@@ -35,25 +35,25 @@
     </span>
     </div>
 
-      <button (click)="addImage('add')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+      <button (click)="addImage('add')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Somar duas imagens
       </button>
 
-      <button (click)="addImage('media')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+      <button (click)="addImage('media')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Média linear
       </button>
 
-      <button (click)="addImage('subtract')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+      <button (click)="addImage('subtract')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Subtrair duas imagens
       </button>
 
-     <button (click)="addImage('modulo')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg 
+     <button (click)="addImage('modulo')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md 
          disabled:bg-zinc-200 disabled:text-zinc-400 
          disabled:cursor-not-allowed">
         Subtrair em módulo
@@ -90,11 +90,11 @@
     </div>
   </div>
 
-<div class="col-span-1">
-  <div class="flex-1 shadow-lg  flex flex-col items-center rounded"
+<div class="col-span-1 shadow-md bg-white">
+  <div class="flex-1 shadow-md  flex flex-col items-center rounded shadow-md bg-white"
        style="max-width: 100%; height: auto;">
 
-    <div class="flex items-center justify-center overflow-hidden rounded" style="height: 200px;"
+    <div class="flex items-center justify-center overflow-hidden rounded bg-white shadow-md" style="height: 200px;"
          >
       @if (imageService.getSecondaryImageDataUrl()) {
         <img
