@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Angular
         run: |
-          npm run build -- --base-href="/proc_imagem/"
+          npm run build -- --base-href="/"
           touch docs/browser/.nojekyll
 
       - name: Upload artifact
