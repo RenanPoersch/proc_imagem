@@ -1,36 +1,32 @@
 <div class="grid grid-cols-3 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
   <div class="col-span-2">
     <div class="grid grid-cols-2 gap-3">
-      <div class="flex flex-col bg-white shadow-md rounded p-3">
-        <div class="flex items-center justify-between mb-4">
+      <div class="flex flex-col bg-white shadow-md rounded">
+        <div class="inline-flex shadow-md rounded mb-4 mt-0">
           <button
             (click)="toGreyScale(colorsMat)"
             [disabled]="!imageService.hasProcessableImage"
-            class="flex-1 mr-2 px-2 py-3 text-sm top-0
-                  bg-zinc-100 text-zinc-800
-                  shadow-md transition cursor-pointer
+            class="flex-1 px-4 py-3 text-sm text-zinc-800 bg-zinc-100 pl-13
+                  transition cursor-pointer
                   hover:bg-zinc-200
                   disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
             Escala de cinza
           </button>
-
           <button
             (click)="backToBasicGrey()"
-            class="p-2 rounded bg-zinc-100 text-zinc-600 shadow-md
-                  hover:bg-zinc-200 transition">
-            <!-- Ícone Heroicon Refresh -->
-            <svg xmlns="http://www.w3.org/2000/svg"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 4v6h6M20 20v-6h-6M5 19a9 9 0 0114-7.5M19 5a9 9 0 00-14 7.5"/>
-            </svg>
+            class="px-4 py-3 bg-zinc-200 text-zinc-600
+                   cursor-pointer hover:bg-zinc-400 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" 
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" 
+              class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 19l-7-7 7-7" />
+             </svg>
           </button>
         </div>
-
-        <div class="space-y-3">
+        <div class="space-y-3 p-3">
           <div class="space-y-3">
-        <div>
+          <div>
           <label class="text-sm">R</label>
           <input
             type="range" min="0" max="1" step="0.001"
