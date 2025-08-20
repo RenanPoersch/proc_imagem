@@ -26,7 +26,7 @@ export class Image implements AfterViewInit {
   @ViewChild('aCanvas') aCanvas!: ElementRef<HTMLCanvasElement>;
 
   constructor(public imageService: ImageService, public router: Router ) {}
-  
+
   ngAfterViewInit() {}
 
   ngOnInit() {
@@ -37,7 +37,6 @@ export class Image implements AfterViewInit {
         return this.imageService.uploadPhoto(file);
       })
       .then(dataUrl => {
-        console.log('Imagem carregada com sucesso!', dataUrl);
       })
       .catch(error => {
         console.error('Erro ao carregar imagem:', error);

@@ -194,6 +194,17 @@ export class ImageService {
     return base;
   }
 
+  srgbToLinear(c: number): number {
+    const x = c / 255;
+    return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+  }
+
+  linearToSrgb(c: number): number {
+    return c <= 0.0031308
+      ? Math.round(255 * (12.92 * c))
+      : Math.round(255 * (1.055 * Math.pow(c, 1 / 2.4) - 0.055));
+  }
+
   async extractColorMatrices(imageDataUrl: string): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       const img = new Image();
@@ -306,7 +317,7 @@ export class ImageService {
     });
   }
 
-  private async canvasFromDataURL(dataUrl: string): Promise<{
+  private canvasFromDataURL(dataUrl: string): Promise<{
     ctx: CanvasRenderingContext2D | null; width: number; height: number;
   }> {
     return new Promise((resolve, reject) => {
@@ -510,8 +521,8 @@ private async runOnImageData(
  // ╚══════════════════╝
 
 
-  async adjustBrightness(brightness: number, op: string | null): Promise<void> {
-    await this.runOnImageData((imageData) => {
+  adjustBrightness(brightness: number, op: string | null) {
+    this.runOnImageData((imageData) => {
       const d = imageData.data;
     if(op) {
        for (let i = 0; i < d.length; i += 4) {
@@ -529,7 +540,7 @@ private async runOnImageData(
     });
   }
 
-  async addImage(percent: { a: number; b: number }, op?: string): Promise<void> {
+  addImage(percent: { a: number; b: number }, op?: string) {
     if (!this.secondaryImageDataUrl) {
       console.warn('[addImage] Nenhuma imagem secundária carregada.');
       return;
@@ -537,7 +548,7 @@ private async runOnImageData(
     const k  = percent.a / 100;
     const k2 = percent.b / 100;
 
-    await this.runOnImageData(async (imageData, ctx) => {
+    this.runOnImageData(async (imageData, ctx) => {
       const secImg = await this.loadImage(this.secondaryImageDataUrl);
       const W = ctx.canvas.width, H = ctx.canvas.height;
 
@@ -580,8 +591,8 @@ private async runOnImageData(
     });
   }
 
-  async adjustContrast(factor: number): Promise<void> {
-    await this.runOnImageData((imageData) => {
+  adjustContrast(factor: number) {
+    this.runOnImageData((imageData) => {
       const d = imageData.data;
       for (let i = 0; i < d.length; i += 4) {
         d[i]     = this.limit8((d[i]     - 128) * factor + 128);
@@ -595,9 +606,9 @@ private async runOnImageData(
  // ║   GEOMETRICA     ║
  // ╚══════════════════╝
 
-  async flipImage(direction: 'hor' | 'ver'): Promise<void> {
+  async flipImage(direction: 'hor' | 'ver') {
 
-    await this.runOnImageData((imageData, ctx, canvas) => {
+    this.runOnImageData((imageData, ctx, canvas) => {
       const width = canvas.width;
       const height = canvas.height;
       const src = imageData.data;
@@ -622,6 +633,31 @@ private async runOnImageData(
 
       return new ImageData(array, width, height);
 
+    });
+  }
+
+
+ // ╔══════════════════╗
+ // ║      COLORS      ║
+ // ╚══════════════════╝
+
+  toGrayscaleLinear(wr: number, wg: number, wb: number) {
+
+    this.runOnImageData((imageData) => {
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+
+        const rLin = this.srgbToLinear(d[i]);
+        const gLin = this.srgbToLinear(d[i + 1]);
+        const bLin = this.srgbToLinear(d[i + 2]);
+
+        const yLin = wr * rLin + wg * gLin + wb * bLin;
+
+        const y = this.linearToSrgb(yLin);
+        d[i] = d[i + 1] = d[i + 2] = y;
+
+      }
+       return imageData;
     });
   }
 }
