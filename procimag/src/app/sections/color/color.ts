@@ -19,7 +19,7 @@ export class Color {
   g = 0.587;
   b = 0.114;
 
-  colorsMat: { r: number; g: number; b: number } = { r: this.r, g: this.g, b: this.b };
+  colorsMat: { r: number; g: number; b: number } = { r: 0.299, g: 0.587, b: 0.114 };
 
   private clamp01(x: number) {
     return Math.min(1, Math.max(0, x));
@@ -47,11 +47,10 @@ export class Color {
 
     this[clr] = this.clamp01(this[clr]);
 
-    const keys: RGBKey[] = ['r', 'g', 'b'];
-    const others = keys.filter(k => k !== clr);
+    const others = (['r', 'g', 'b'] as RGBKey[]).filter(k => k !== clr);
 
-    const newSel = this[clr];
-    const remaining = this.clamp01(1 - newSel);
+    const newValue = this[clr];
+    const remaining = this.clamp01(1 - newValue);
 
     const oldO1 = this[others[0]];
     const oldO2 = this[others[1]];
@@ -82,5 +81,13 @@ export class Color {
       return
     };
     this.imageService.toGrayscaleLinear(wr, wg, wb);
+  }
+
+  backToBasicGrey() {
+    this.r = 0.299;
+    this.g = 0.587;
+    this.b = 0.114;
+    this.colorsMat = { r: this.r, g: this.g, b: this.b };
+    this.toGreyScale(this.colorsMat);
   }
 }

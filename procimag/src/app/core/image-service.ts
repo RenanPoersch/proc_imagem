@@ -641,6 +641,7 @@ private async runOnImageData(
  // ║      COLORS      ║
  // ╚══════════════════╝
 
+
   toGrayscaleLinear(wr: number, wg: number, wb: number) {
 
     this.runOnImageData((imageData) => {
