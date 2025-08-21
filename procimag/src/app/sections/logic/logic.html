@@ -1,1 +1,63 @@
-<p>logic works!</p>
+
+<div class="grid grid-cols-3 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
+  <div class="col-span-2">
+    <div class="grid grid-cols-2 gap-3">
+      <button (click)="addImage('and')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:cursor-not-allowed">
+        AND
+      </button>
+
+      <button (click)="addImage('or')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:cursor-not-allowed">
+        OR
+      </button>
+
+       <button (click)="addImage('not')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:cursor-not-allowed">
+        NOT
+      </button>
+
+       <button (click)="addImage('xor')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:cursor-not-allowed">
+       XOR
+      </button>
+    </div>
+  </div>
+  <div class="col-span-1 shadow-md bg-white">
+    <div
+      class="flex-1 shadow-md flex flex-col items-center rounded bg-white"
+      style="max-width: 100%; height: auto"
+    >
+      <div
+        class="flex items-center justify-center overflow-hidden rounded bg-white shadow-md"
+        style="height: 200px"
+      >
+        @if (imageService.getSecondaryImageDataUrl()) {
+        <img
+          [src]="imageService.getSecondaryImageDataUrl()"
+          alt="Imagem secundária"
+          class="object-contain"
+          style="max-width: 200px; max-height: 200px; height: 200px"
+        />
+        }
+      </div>
+      <div class="w-full mt-0 rounded">
+        <label
+          class="w-full block px-2 py-2 cursor-pointer text-center bg-zinc-200 hover:bg-zinc-300 transition"
+        >
+          <input
+            type="file"
+            (change)="onSecondaryFileSelected($event)"
+            class="hidden"
+          />
+          <span class="text-sm">Adicionar imagem secundária</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
