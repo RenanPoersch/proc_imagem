@@ -1,65 +1,119 @@
 <div class="grid grid-cols-3 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
   <div class="col-span-2">
     <div class="grid grid-cols-2 gap-3">
-      <div class="flex flex-col bg-white shadow-md rounded">
-        <div class="inline-flex shadow-md rounded mb-4 mt-0">
-          <button
-            (click)="toGreyScale(colorsMat)"
-            [disabled]="!imageService.hasProcessableImage"
-            class="flex-1 px-4 py-3 text-sm text-zinc-800 bg-zinc-100 pl-13
-                  transition cursor-pointer
-                  hover:bg-zinc-200
-                  disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
+      <div class="flex flex-col bg-white shadow-md">
+        <div class="inline-flex shadow-md mb-4 mt-0">
+          <button (click)="toGreyScale(colorsMat)" [disabled]="!imageService.hasProcessableImage"
+            class="flex-1 px-4 py-3 text-sm text-zinc-800 bg-zinc-100 pl-13 transition cursor-pointer hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
             Escala de cinza
           </button>
-          <button
-            (click)="backToBasicGrey()"
-            class="px-4 py-3 bg-zinc-200 text-zinc-600
-                   cursor-pointer hover:bg-zinc-400 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" 
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" 
+          <button (click)="backToBasicGrey()"
+            class="px-4 py-3 bg-zinc-200 text-zinc-600 cursor-pointer hover:bg-zinc-400 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
               class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 19l-7-7 7-7" />
-             </svg>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
         </div>
         <div class="space-y-3 p-3">
           <div class="space-y-3">
+            <label class="text-sm">R</label>
+            <input type="range" min="0" max="1" step="0.001" [(ngModel)]="r" (input)="onSlider('r')"
+              [disabled]="!imageService.hasProcessableImage"
+              class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+            <span class="text-xs text-zinc-600">{{
+              r | number : "1.3-3"
+              }}</span>
+          </div>
+
+          <div class="space-y-3">
+            <label class="text-sm">G</label>
+            <input type="range" min="0" max="1" step="0.001" [(ngModel)]="g" (input)="onSlider('g')"
+              [disabled]="!imageService.hasProcessableImage"
+              class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+            <span class="text-xs text-zinc-600">{{
+              g | number : "1.3-3"
+              }}</span>
+          </div>
+
+          <div class="space-y-3">
+            <label class="text-sm">B</label>
+            <input type="range" min="0" max="1" step="0.001" [(ngModel)]="b" (input)="onSlider('b')"
+              [disabled]="!imageService.hasProcessableImage"
+              class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+            <span class="text-xs text-zinc-600">{{
+              b | number : "1.3-3"
+              }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col bg-white shadow-md">
+        <div class="inline-flex shadow-md mb-4 mt-0">
+          <button (click)="toGreyScale(colorsMat)" [disabled]="!imageService.hasProcessableImage"
+            class="flex-1 px-4 py-3 text-sm text-zinc-800 bg-zinc-100 pl-13 transition cursor-pointer hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
+            Cor
+          </button>
+          <button (click)="backToBasicGrey()"
+            class="px-4 py-3 bg-zinc-200 text-zinc-600 cursor-pointer hover:bg-zinc-400 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-4 p-3">
           <div>
-          <label class="text-sm">R</label>
-          <input
-            type="range" min="0" max="1" step="0.001"
-            [(ngModel)]="r" (input)="onSlider('r')"
-            [disabled]="!imageService.hasProcessableImage"
-            class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed"
-          />
-          <span class="text-xs text-zinc-600">{{ r | number:'1.3-3' }}</span>
+            <label class="text-sm">Ganho</label>
+            <input type="range" min="-255" max="255" step="1" [(ngModel)]="rGain"
+              (ngModelChange)="onGainChange('r', $event)" class="w-full cursor-pointer accent-red-500 " />
+          </div>
+
+          <div>
+            <input type="range" min="-255" max="255" step="1" [(ngModel)]="gGain" style="accent-color: green"
+              (ngModelChange)="onGainChange('g', $event)" class="w-full cursor-pointer" />
+          </div>
+
+          <div>
+            <input type="range" min="-255" max="255" step="1" [(ngModel)]="bGain"
+              (ngModelChange)="onGainChange('b', $event)" class="w-full cursor-pointer" />
+          </div>
         </div>
+        
+        <label class="knob-title pl-3">Tolerância</label>
+        <div class="knob-group p-3">
+          <!-- R -->
+          <div class="knob-block flex flex-row gap-5 items-center justify-between">
+            <div>
+              <div class="knob knob--r" (pointerdown)="startRotate($event, 'r')" #knobR>
+                <div class="knob__ring"></div>
+                <div class="knob__needle bg-red-500" [style.transform]="'rotate(' + (tolR - 90) + 'deg)'"></div>
+                <div class="knob__ticks"></div>
+              </div>
+              <div class="knob-value">{{ tolR }}°</div>
+            </div>
 
-        <div>
-          <label class="text-sm">G</label>
-          <input
-            type="range" min="0" max="1" step="0.001"
-            [(ngModel)]="g" (input)="onSlider('g')"
-            [disabled]="!imageService.hasProcessableImage"
-            class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed"
-          />
-          <span class="text-xs text-zinc-600">{{ g | number:'1.3-3' }}</span>
+            <!-- G -->
+            <div class="knob-block">
+              <div class="knob knob--g" (pointerdown)="startRotate($event, 'g')" #knobG>
+                <div class="knob__ring"></div>
+                <div class="knob__needle bg-green-500" [style.transform]="'rotate(' + (tolG - 90) + 'deg)'"></div>
+                <div class="knob__ticks"></div>
+              </div>
+              <div class="knob-value">{{ tolG }}°</div>
+            </div>
+
+            <!-- B -->
+            <div class="knob-block">
+              <div class="knob knob--b" (pointerdown)="startRotate($event, 'b')" #knobB>
+                <div class="knob__ring"></div>
+                <div class="knob__needle bg-blue-500" [style.transform]="'rotate(' + (tolB - 90) + 'deg)'"></div>
+                <div class="knob__ticks"></div>
+              </div>
+              <div class="knob-value">{{ tolB }}°</div>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <label class="text-sm">B</label>
-          <input
-            type="range" min="0" max="1" step="0.001"
-            [(ngModel)]="b" (input)="onSlider('b')"
-            [disabled]="!imageService.hasProcessableImage"
-            class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed"
-          />
-          <span class="text-xs text-zinc-600">{{ b | number:'1.3-3' }}</span>
-        </div>
-
-
       </div>
     </div>
   </div>
+</div>

@@ -488,7 +488,7 @@ export class ImageService {
  * já modificado (ou um novo), que será aplicado no canvas.
  * Retorna o dataURL final.
  */
-private async runOnImageData(
+ async runOnImageData(
   editor: (imageData: ImageData, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => void | ImageData | Promise<void | ImageData>
 ): Promise<string | null> {
 
@@ -659,6 +659,26 @@ private async runOnImageData(
 
       }
        return imageData;
+    });
+  }
+
+  colorGrade(value: number, color: string) {
+    this.runOnImageData((imageData) => {
+      const d = imageData.data;
+      if (color === 'r') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i] = this.limit8(d[i] + value);
+        }
+      } else if (color === 'g') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i + 1] = this.limit8(d[i + 1] + value);
+        }
+      } else if (color === 'b') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i + 2] = this.limit8(d[i + 2] + value);
+        }
+      }
+      return imageData;
     });
   }
 }

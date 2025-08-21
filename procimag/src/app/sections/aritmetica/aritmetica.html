@@ -36,47 +36,47 @@
       </div>
       <div class="flex flex-row gap-3">
         <button (click)="onBrightnessChange(0.25)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-          disabled:bg-zinc-200 disabled:text-zinc-400
+          disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
           disabled:cursor-not-allowed">
         25%
         </button>   <button (click)="onBrightnessChange(0.5)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-          disabled:bg-zinc-200 disabled:text-zinc-400
+          disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
           disabled:cursor-not-allowed">
           50%
         </button>
       </div>
       <div class="flex flex-row gap-3">
         <button (click)="onBrightnessChange(1.5)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-          disabled:bg-zinc-200 disabled:text-zinc-400
+          disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
           disabled:cursor-not-allowed">
         1.5x
         </button>   <button (click)="onBrightnessChange(2)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-          disabled:bg-zinc-200 disabled:text-zinc-400
+          disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
           disabled:cursor-not-allowed">
           2x
         </button>
       </div>
 
       <button (click)="addImage('add')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:bg-zinc-200 disabled:text-zinc-400  hover:bg-zinc-100
          disabled:cursor-not-allowed">
         Somar duas imagens
       </button>
 
       <button (click)="addImage('media')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
          disabled:cursor-not-allowed">
         Média linear
       </button>
 
       <button (click)="addImage('subtract')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
          disabled:cursor-not-allowed">
         Subtrair duas imagens
       </button>
 
      <button (click)="addImage('modulo')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer w-full px-2 py-3 text-sm bg-white rounded hover:shadow-md transition enabled:hover:shadow-md
-         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:bg-zinc-200 disabled:text-zinc-400 hover:bg-zinc-100
          disabled:cursor-not-allowed">
         Subtrair em módulo
       </button>
