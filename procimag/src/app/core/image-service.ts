@@ -607,9 +607,11 @@ export class ImageService {
     });
   }
 
+
  // ╔══════════════════╗
  // ║   GEOMETRICA     ║
  // ╚══════════════════╝
+
 
   async flipImage(direction: 'hor' | 'ver') {
 
@@ -641,7 +643,62 @@ export class ImageService {
     });
   }
 
+  
+ // ╔══════════════════╗
+ // ║       LOGIC      ║
+ // ╚══════════════════╝
 
+
+  addGate(op: 'and' | 'not' | 'or' | 'xor') {
+    if (!this.secondaryImageDataUrl) {
+      console.warn('[addImage] Nenhuma imagem secundária carregada.');
+      return;
+    }
+
+    this.runOnImageData(async (imageData, ctx) => {
+      const secImg = await this.loadImage(this.secondaryImageDataUrl);
+      const W = ctx.canvas.width, H = ctx.canvas.height;
+
+      const secCanvas = document.createElement('canvas');
+      secCanvas.width = W; secCanvas.height = H;
+
+      const secCtx = secCanvas.getContext('2d');
+      if (!secCtx) throw new Error('Canvas context not available');
+
+      secCtx.drawImage(secImg, 0, 0, W, H);
+      const secData = secCtx.getImageData(0, 0, W, H).data;
+      const d = imageData.data;
+
+      if (op === 'and') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(d[i]     & secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] & secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] & secData[i + 2]);
+        }
+      } else if (op === 'not') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(255 - d[i]);
+          d[i + 1] = this.limit8(255 - d[i + 1]);
+          d[i + 2] = this.limit8(255 - d[i + 2]);
+        }
+      } else if(op === 'or') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(d[i]     | secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] | secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] | secData[i + 2]);
+        }
+      } else if(op === 'xor') {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i]     = this.limit8(d[i]     ^ secData[i]);
+          d[i + 1] = this.limit8(d[i + 1] ^ secData[i + 1]);
+          d[i + 2] = this.limit8(d[i + 2] ^ secData[i + 2]);
+        }
+      }
+      return imageData;
+    });
+  }
+
+  
  // ╔══════════════════╗
  // ║      COLORS      ║
  // ╚══════════════════╝
