@@ -2,14 +2,13 @@ import { Component } from '@angular/core';
 import { ImageService } from '../../core/image-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgxKnobModule } from 'ngx-knob';
 
 type RGBKey = 'r' | 'g' | 'b';
 
 @Component({
   selector: 'app-color',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxKnobModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './color.html',
   styleUrls: ['./color.css']
 })
