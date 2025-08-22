@@ -49,11 +49,11 @@
       </div>
       <div class="flex flex-col bg-white shadow-md">
         <div class="inline-flex shadow-md mb-4 mt-0">
-          <button (click)="toGreyScale(colorsMat)" [disabled]="!imageService.hasProcessableImage"
+          <button (click)="colorGrade()" [disabled]="!imageService.hasProcessableImage"
             class="flex-1 px-4 py-3 text-sm text-zinc-800 bg-zinc-100 pl-13 transition cursor-pointer hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
             Cor
           </button>
-          <button (click)="backToBasicGrey()"
+          <button (click)="backToBasicRGB()"
             class="px-4 py-3 bg-zinc-200 text-zinc-600 cursor-pointer hover:bg-zinc-400 transition">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
               class="w-5 h-5">
