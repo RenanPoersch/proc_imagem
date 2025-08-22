@@ -30,10 +30,10 @@ export class Image implements AfterViewInit {
   ngAfterViewInit() {}
 
   ngOnInit() {
-    fetch('assets/Add2.jpg')
+    fetch('assets/rainbow.png')
       .then(res => res.blob())
       .then(blob => {
-        const file = new File([blob], 'Add2.jpg', { type: blob.type });
+        const file = new File([blob], 'rainbow.png', { type: blob.type });
         return this.imageService.uploadPhoto(file);
       })
       .then(dataUrl => {

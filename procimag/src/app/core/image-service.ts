@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as UTIF from 'utif';
 import * as exifr from 'exifr';
+import { ConversorService } from './conversor.service';
+
+type RGBKey = 'r' | 'g' | 'b';
 
 export interface ImageMetadata {
   container: {
@@ -38,6 +41,8 @@ type SniffInfo = {
 
 @Injectable({ providedIn: 'root' })
 export class ImageService {
+  constructor(private conversorService: ConversorService) {}
+
   private imageDataUrl: string | null = null;
   private secondaryImageDataUrl: any = null;
   private editedImageDataUrl: string | null = null;
@@ -488,7 +493,7 @@ export class ImageService {
  * já modificado (ou um novo), que será aplicado no canvas.
  * Retorna o dataURL final.
  */
-private async runOnImageData(
+ async runOnImageData(
   editor: (imageData: ImageData, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => void | ImageData | Promise<void | ImageData>
 ): Promise<string | null> {
 
@@ -602,9 +607,11 @@ private async runOnImageData(
     });
   }
 
+
  // ╔══════════════════╗
  // ║   GEOMETRICA     ║
  // ╚══════════════════╝
+
 
   async flipImage(direction: 'hor' | 'ver') {
 
@@ -636,36 +643,10 @@ private async runOnImageData(
     });
   }
 
-
- // ╔══════════════════╗
- // ║      COLORS      ║
- // ╚══════════════════╝
-
-
-  toGrayscaleLinear(wr: number, wg: number, wb: number) {
-
-    this.runOnImageData((imageData) => {
-      const d = imageData.data;
-      for (let i = 0; i < d.length; i += 4) {
-
-        const rLin = this.srgbToLinear(d[i]);
-        const gLin = this.srgbToLinear(d[i + 1]);
-        const bLin = this.srgbToLinear(d[i + 2]);
-
-        const yLin = wr * rLin + wg * gLin + wb * bLin;
-
-        const y = this.linearToSrgb(yLin);
-        d[i] = d[i + 1] = d[i + 2] = y;
-
-      }
-       return imageData;
-    });
-  }
-
+  
  // ╔══════════════════╗
  // ║       LOGIC      ║
  // ╚══════════════════╝
-
 
 
   addGate(op: 'and' | 'not' | 'or' | 'xor') {
@@ -716,4 +697,98 @@ private async runOnImageData(
       return imageData;
     });
   }
+
+  
+ // ╔══════════════════╗
+ // ║      COLORS      ║
+ // ╚══════════════════╝
+
+
+  toGrayscaleLinear(wr: number, wg: number, wb: number) {
+
+    this.runOnImageData((imageData) => {
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+
+        const rLin = this.srgbToLinear(d[i]);
+        const gLin = this.srgbToLinear(d[i + 1]);
+        const bLin = this.srgbToLinear(d[i + 2]);
+
+        const yLin = wr * rLin + wg * gLin + wb * bLin;
+
+        const y = this.linearToSrgb(yLin);
+        d[i] = d[i + 1] = d[i + 2] = y;
+
+      }
+       return imageData;
+    });
+  }
+
+  colorGrade(rGain: number, gGain: number, bGain: number, tolR: number, tolG: number, tolB: number) {
+    this.runOnImageData((img) => {
+      let out = img;
+      out = this.enhanceRGBKeyPerceptual(
+        out, 'r',
+        this.satFactorFromGain(rGain),
+        this.clampTolDeg(tolR) 
+      );
+      out = this.enhanceRGBKeyPerceptual(
+        out, 'g',
+        this.satFactorFromGain(gGain),
+        this.clampTolDeg(tolG)
+      );
+      out = this.enhanceRGBKeyPerceptual(
+        out, 'b',
+        this.satFactorFromGain(bGain),
+        this.clampTolDeg(tolB)
+      );
+    return out;
+  })}
+
+  private satFactorFromGain(gain: number) {
+    return 1 + gain / 255;
+  }
+
+  private enhanceRGBKeyPerceptual(
+    imageData: ImageData,
+    RGBKey: RGBKey,
+    satFactor: number,
+    toleranceDeg: number
+  ): ImageData {
+    const d = imageData.data;
+    const targetH = this.hueForRGBKey(RGBKey);
+    
+    if (toleranceDeg === 0) {
+      return imageData;
+    };
+
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], g = d[i + 1], b = d[i + 2];
+      let [h, s, l] = this.conversorService.rgbToHsl(r, g, b);
+
+      const dist = this.hueDist(h, targetH);
+      const w = Math.max(0, 1 - dist / toleranceDeg);
+
+      if (w > 0) {
+        const sOut = s * (1 + (satFactor - 1) * w);
+        const [nr, ng, nb] = this.conversorService.hslToRgb(h, Math.min(1, Math.max(0, sOut)), l);
+        d[i] = nr; d[i + 1] = ng; d[i + 2] = nb;
+      }
+    }
+    return imageData;
+  }
+
+  private clampTolDeg(deg: number) {
+      return Math.max(0, Math.min(180, Math.round(deg)));
+    }
+
+  private hueDist(a: number, b: number): number {
+    const d = Math.abs(a - b) % 360;
+    return d > 180 ? 360 - d : d;
+  }
+
+  private hueForRGBKey(ch: RGBKey): number {
+    return ch === 'r' ? 0 : ch === 'g' ? 120 : 240;
+  }
+
 }
