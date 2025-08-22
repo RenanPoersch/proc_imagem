@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ConversorService {
+
   hslToRgb(h: number, s: number, l: number): [number, number, number] {
     const c = (1 - Math.abs(2 * l - 1)) * s;
     const hp = (h % 360) / 60;
@@ -29,16 +30,62 @@ export class ConversorService {
     const d = max - min;
     const l = (max + min) / 2;
     let s = 0;
-    if (d !== 0) s = d / (1 - Math.abs(2 * l - 1));
+
+    if (d !== 0) {
+      s = d / (1 - Math.abs(2 * l - 1));
+    }
+
     let h = 0;
+    
     if (d !== 0) {
       switch (max) {
-        case r: h = 60 * (((g - b) / d) % 6); break;
-        case g: h = 60 * (((b - r) / d) + 2); break;
-        default: h = 60 * (((r - g) / d) + 4); break;
+        case r: h = 60 * (((g - b) / d) % 6); 
+          break;
+        case g: h = 60 * (((b - r) / d) + 2); 
+          break;
+        default: h = 60 * (((r - g) / d) + 4); 
+          break;
       }
     }
-    if (h < 0) h += 360;
+    if (h < 0) {
+       h += 360
+    };
+
     return [h, s, l];
+  }
+
+  normalizeRgb(ch: number): number {
+    return ch / 255;
+  }
+
+  rgbToHsv(r255: number, g255: number, b255: number): [number, number, number] {
+    const r = this.normalizeRgb(r255);
+    const g = this.normalizeRgb(g255);
+    const b = this.normalizeRgb(b255);
+
+    const c = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+
+    const delta = c - min;
+
+    const v = c;
+    const s = c === 0 ? 0 : delta / c;
+
+    let h = 0;
+
+    if (delta !== 0) {
+      if (c === r) {
+        h = 60 * ((g - b) / delta) % 6;
+      } else if (c === g) {
+        h = 60 * ((b - r) / delta + 2);
+      } else {
+        h = 60 * ((r - g) / delta + 4);
+      }
+      if (h < 0) {
+        h += 360;
+      }
+    }
+
+    return [h, s, v];
   }
 }
