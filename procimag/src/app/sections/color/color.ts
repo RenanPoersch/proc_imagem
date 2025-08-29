@@ -23,9 +23,13 @@ export class Color {
   gGain = 0;
   bGain = 0;
 
-  tolR = 10;
-  tolG = 10;
-  tolB = 10;
+  tolR = 30;
+  tolG = 30;
+  tolB = 30;
+
+  threshold = 127;
+  constant = 0;
+  window = 1;
 
   colorsMat: { r: number; g: number; b: number } = { r: 0.299, g: 0.587, b: 0.114 };
 
@@ -49,6 +53,14 @@ export class Color {
   onGainChange(ch: RGBKey, v: number) {
     this[`${ch}Gain`] = v;
     this.colorGrade();
+  }
+
+  onThresholdChange() {
+    if (this.window > 1 && this.constant !== 0) {
+      this.imageService.imageTresholdAdaptative(this.threshold, this.window, this.constant);
+    } else {
+      this.imageService.imageTreshold(this.threshold);
+    }
   }
 
   startRotate(event: PointerEvent, channel: 'r' | 'g' | 'b') {
@@ -137,6 +149,12 @@ export class Color {
     this.tolR = 10;
     this.tolG = 10;
     this.tolB = 10;
+  }
+
+  threshReset() {
+    this.threshold = 127;
+    this.constant = 0;
+    this.window = 1;
   }
 
   private clamp01(x: number) {

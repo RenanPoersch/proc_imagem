@@ -742,8 +742,9 @@ export class ImageService {
         this.satFactorFromGain(bGain),
         this.clampTolDeg(tolB)
       );
-    return out;
-  })}
+      return out;
+    })
+  }
 
   private satFactorFromGain(gain: number) {
     return 1 + gain / 255;
@@ -791,4 +792,76 @@ export class ImageService {
     return ch === 'r' ? 0 : ch === 'g' ? 120 : 240;
   }
 
+  imageTreshold(th: number) {
+    this.runOnImageData((imageData) => {
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const med = (d[i] + d[i+1] + d[i+2]) / 3;
+        const val = med >= th ? 255 : 0;
+        if (med >= th ) {
+          d[i]     = val;
+          d[i + 1] = val;
+          d[i + 2] = val;
+        } else {
+          d[i]     = val;
+          d[i + 1] = val;
+          d[i + 2] = val;
+        }
+      }
+      return imageData;
+    });
+  }
+
+  imageTresholdAdaptative(th: number, win: number, C: number) {
+    this.runOnImageData((imageData) => {
+
+    const width = imageData.width;
+    const height = imageData.height;
+    const d = imageData.data;
+    const radius = (win - 1) >> 1;
+
+    const gray = new Uint8ClampedArray(width*height);
+    for (let y = 0, i = 0; y < height; y++) {
+      for (let x = 0; x < width; x++, i += 4) {
+        gray[y*width + x] = (d[i] + d[i+1] + d[i+2]) / 3;
+      }
+    }
+
+    for (let y = 0, i = 0; y < height; y++) {
+      for (let x = 0; x < width; x++, i += 4) {
+
+        let sum = 0;
+        let count = 0;
+
+        for (let j = -radius; j <= radius; j++) {
+          const yy = y + j;
+
+          if (yy < 0 || yy >= height) {
+            continue
+          };
+
+          for (let i2 = -radius; i2 <= radius; i2++) {
+            const xx = x + i2;
+
+            if (xx < 0 || xx >= width) {
+              continue
+            };
+
+            sum += gray[yy*width + xx];
+            count++;
+          }
+        }
+
+        const mean = sum / count;
+        const thLocal = mean - C;
+        const val = gray[y*width + x] >= thLocal ? 255 : 0;
+
+        d[i]     = val;
+        d[i + 1] = val;
+        d[i + 2] = val;
+      }
+    }
+    return imageData;
+    });
+  }
 }

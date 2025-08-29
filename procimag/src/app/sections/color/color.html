@@ -116,4 +116,41 @@
       </div>
     </div>
   </div>
+        <div class="flex flex-col bg-white shadow-md h-full">
+        <div class="inline-flex shadow-md mb-4 mt-0">
+          <button (click)="onThresholdChange()" [disabled]="!imageService.hasProcessableImage"
+            class="flex-1 px-4 py-3 text-sm text-zinc-800 bg-zinc-100 pl-13 transition cursor-pointer hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed">
+            Threshold
+          </button>
+          <button (click)="threshReset()"
+            class="px-4 py-3 bg-zinc-200 text-zinc-600 cursor-pointer hover:bg-zinc-400 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-4 p-3">
+          <div>
+            <label class="text-sm">Valor médio</label>
+            <input type="range" min="0" max="255" step="1" [(ngModel)]="threshold"
+              (ngModelChange)="onThresholdChange()" class="w-full cursor-pointer accent-zinc-600" />
+               <span class="text-xs text-zinc-600">{{threshold}}</span>
+          </div>
+
+          <div>
+            <label class="text-sm">Constante</label>
+            <input type="range" min="0" max="50" step="1" [(ngModel)]="constant"
+              (ngModelChange)="onThresholdChange()" class="w-full cursor-pointer accent-zinc-600" />
+              <span class="text-xs text-zinc-600">{{constant}}</span>
+          </div>
+
+          <div>
+            <label class="text-sm">Janela</label>
+            <input type="range" min="1" max="99" step="2" [(ngModel)]="window"
+              (ngModelChange)="onThresholdChange()" class="w-full cursor-pointer accent-zinc-600" />
+              <span class="text-xs text-zinc-600">{{window}}</span>
+          </div>
+        </div>
+    </div>
 </div>
