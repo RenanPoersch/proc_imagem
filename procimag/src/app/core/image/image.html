@@ -59,15 +59,15 @@
 
 @if(imageService.getImageDataUrl()) {
   <!-- HISTOGRAMAS -->
-  <div class="mt-13 flex flex-row shadow-lg ml-5" [class.hidden]="router.url !== '/dados'" style="max-width: max-content">
+  <div class="mt-13 flex flex-row shadow-lg ml-4" [class.hidden]="router.url !== '/dados'" style="max-width: max-content">
     <div class="flex flex-col items-start bg-white">
-      <canvas #rCanvas width="266" height="120" class="bg-whitebg-white rounded"></canvas>
+      <canvas #rCanvas width="241" height="120" class="bg-whitebg-white rounded"></canvas>
     </div>
     <div class="flex flex-col items-start bg-white">
-      <canvas #gCanvas width="266" height="120" class="bg-whitebg-white rounded"></canvas>
+      <canvas #gCanvas width="241" height="120" class="bg-whitebg-white rounded"></canvas>
     </div>
     <div class="flex flex-col items-start bg-white">
-      <canvas #bCanvas width="266" height="120" class="bg-whitebg-white rounded"></canvas>
+      <canvas #bCanvas width="241" height="120" class="bg-whitebg-white rounded"></canvas>
     </div>
   </div>
   

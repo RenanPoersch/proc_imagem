@@ -812,6 +812,19 @@ export class ImageService {
     });
   }
 
+  imageNegative() {
+    this.runOnImageData((imageData) => {
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        d[i]     = 255 - d[i];
+        d[i + 1] = 255 - d[i + 1];
+        d[i + 2] = 255 - d[i + 2];
+      }
+      return imageData;
+    });
+  }
+
+
   imageTresholdAdaptative(th: number, win: number, C: number) {
     this.runOnImageData((imageData) => {
 
@@ -864,4 +877,84 @@ export class ImageService {
     return imageData;
     });
   }
+
+  equalizeHistogram() {
+
+  this.runOnImageData((imageData) => {
+    const d = imageData.data;
+    const N = d.length / 4;
+
+    // 1) Extrai Y e guarda U/V (derivados do RGB)
+    const Y = new Uint8Array(N);
+    const U = new Float32Array(N);
+    const V = new Float32Array(N);
+
+    for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+      const R = d[i], G = d[i+1], B = d[i+2];
+
+      // BT.601 (luma aproximada 8-bit)
+      const y  = 0.299  * R + 0.587  * G + 0.114  * B;
+      const u  = 128 + (-0.168736 * R - 0.331264 * G + 0.5 * B);
+      const v  = 128 + ( 0.5      * R - 0.418688 * G - 0.081312 * B);
+
+      Y[k] = y < 0 ? 0 : y > 255 ? 255 : y | 0;
+      U[k] = u;
+      V[k] = v;
+    }
+
+    // 2) Histograma de Y
+    const hist = new Uint32Array(256);
+    for (let k = 0; k < N; k++) hist[Y[k]]++;
+
+    // 3) CDF normalizada
+    const cdf = new Float64Array(256);
+    let acc = 0;
+    for (let i = 0; i < 256; i++) {
+      acc += hist[i];
+      cdf[i] = acc / N;
+    }
+
+    // Otimização: ignora níveis não usados no início (para evitar "preto" esmagado)
+    // (opcional; pode comentar se não quiser)
+    let cdfMin = 1;
+    for (let i = 0; i < 256; i++) {
+      if (cdf[i] > 0) { cdfMin = cdf[i]; break; }
+    }
+
+    // 4) Mapeamento Y -> Y' (usa CDF esticada)
+    const map = new Uint8Array(256);
+    for (let i = 0; i < 256; i++) {
+      const v = (cdf[i] - cdfMin) / (1 - cdfMin);
+      const yEq = Math.round(Math.max(0, Math.min(1, v)) * 255);
+      map[i] = yEq;
+    }
+
+    // 5) Aplica mapeamento e reconverte YUV -> RGB
+    for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+      const yEq = map[Y[k]];
+      const u = U[k] - 128;
+      const v = V[k] - 128;
+
+      // BT.601 inversa
+      let R = yEq + 1.402 * v;
+      let G = yEq - 0.344136 * u - 0.714136 * v;
+      let B = yEq + 1.772 * u;
+
+      // clamp
+      R = R < 0 ? 0 : R > 255 ? 255 : R;
+      G = G < 0 ? 0 : G > 255 ? 255 : G;
+      B = B < 0 ? 0 : B > 255 ? 255 : B;
+
+      d[i]   = R | 0;
+      d[i+1] = G | 0;
+      d[i+2] = B | 0;
+      // d[i+3] alpha mantido
+    }
+
+    return imageData;
+  });
 }
+
+  }
+
+

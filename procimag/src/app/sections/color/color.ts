@@ -55,6 +55,14 @@ export class Color {
     this.colorGrade();
   }
 
+  turnNegative() {
+    this.imageService.imageNegative();
+  }
+
+  equalize() {
+    this.imageService.equalizeHistogram();
+  }
+
   onThresholdChange() {
     if (this.window > 1 && this.constant !== 0) {
       this.imageService.imageTresholdAdaptative(this.threshold, this.window, this.constant);
