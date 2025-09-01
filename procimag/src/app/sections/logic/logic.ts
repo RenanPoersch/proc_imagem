@@ -8,13 +8,9 @@ import { ImageService } from '../../core/image-service';
   styleUrl: './logic.css'
 })
 export class Logic {
-  constructor(public imageService: ImageService) {
+  constructor(public imageService: ImageService) {}
 
-  }
-    addImage(operation: 'and' | 'not' | 'or' | 'xor') {
-    if (!this.imageService.hasProcessableImage) {
-      return;
-    }
+  addImage(operation: 'and' | 'not' | 'or' | 'xor') {
     this.imageService.addGate(operation);
   }
 

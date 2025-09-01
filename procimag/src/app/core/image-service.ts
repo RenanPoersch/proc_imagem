@@ -650,12 +650,22 @@ export class ImageService {
 
 
   addGate(op: 'and' | 'not' | 'or' | 'xor') {
-    if (!this.secondaryImageDataUrl) {
-      console.warn('[addImage] Nenhuma imagem secundária carregada.');
-      return;
-    }
-
     this.runOnImageData(async (imageData, ctx) => {
+
+      if (op === 'not') {
+        this.runOnImageData((imageData) => {
+          const d = imageData.data;
+          for (let i = 0; i < d.length; i += 4) {
+            d[i]     = this.limit8(255 - d[i]);
+            d[i + 1] = this.limit8(255 - d[i + 1]);
+            d[i + 2] = this.limit8(255 - d[i + 2]);
+            // alpha (d[i+3]) preservado
+          }
+          return imageData;
+        });
+        return;
+      }  
+
       const secImg = await this.loadImage(this.secondaryImageDataUrl);
       const W = ctx.canvas.width, H = ctx.canvas.height;
 
@@ -674,12 +684,6 @@ export class ImageService {
           d[i]     = this.limit8(d[i]     & secData[i]);
           d[i + 1] = this.limit8(d[i + 1] & secData[i + 1]);
           d[i + 2] = this.limit8(d[i + 2] & secData[i + 2]);
-        }
-      } else if (op === 'not') {
-        for (let i = 0; i < d.length; i += 4) {
-          d[i]     = this.limit8(255 - d[i]);
-          d[i + 1] = this.limit8(255 - d[i + 1]);
-          d[i + 2] = this.limit8(255 - d[i + 2]);
         }
       } else if(op === 'or') {
         for (let i = 0; i < d.length; i += 4) {

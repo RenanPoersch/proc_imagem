@@ -2,13 +2,13 @@
 <div class="grid grid-cols-3 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
   <div class="col-span-2">
     <div class="grid grid-cols-2 gap-3">
-      <button (click)="addImage('and')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+      <button (click)="addImage('and')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
          disabled:bg-zinc-200 disabled:text-zinc-400
          disabled:cursor-not-allowed">
         AND
       </button>
 
-      <button (click)="addImage('or')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+      <button (click)="addImage('or')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
          disabled:bg-zinc-200 disabled:text-zinc-400
          disabled:cursor-not-allowed">
         OR
@@ -20,7 +20,7 @@
         NOT
       </button>
 
-       <button (click)="addImage('xor')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+       <button (click)="addImage('xor')" [disabled]="!imageService.hasProcessableImage || !imageService.hasProcessableSecImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
          disabled:bg-zinc-200 disabled:text-zinc-400
          disabled:cursor-not-allowed">
        XOR
