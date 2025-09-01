@@ -659,7 +659,6 @@ export class ImageService {
             d[i]     = this.limit8(255 - d[i]);
             d[i + 1] = this.limit8(255 - d[i + 1]);
             d[i + 2] = this.limit8(255 - d[i + 2]);
-            // alpha (d[i+3]) preservado
           }
           return imageData;
         });
