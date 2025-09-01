@@ -1321,6 +1321,180 @@ kthOrder(values: number[], k: number): number {
     });
   }
 
+prewitt(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
+  this.runOnImageData((imageData) => {
+    const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+    const src = new Uint8ClampedArray(pixels); // snapshot
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const idx = (x: number, y: number) => (y * imageWidth + x) * 4;
+
+    // declare BEFORE any use to avoid TS “used before its declaration”
+    const getLuma = (base: number) =>
+      0.299 * src[base] + 0.587 * src[base + 1] + 0.114 * src[base + 2];
+
+    // map the theoretical maxima to 255
+    const scaleX = 1 / 3;                  // |gx|max = 3*255  -> 255
+    const scaleY = 1 / 3;                  // |gy|max = 3*255  -> 255
+    const scaleMag = 1 / (3 * Math.SQRT2); // sqrt(2)*(3*255) -> 255
+
+    for (let y = 0; y < imageHeight; y++) {
+      for (let x = 0; x < imageWidth; x++) {
+        const xm1 = clampIndex(x - 1, imageWidth);
+        const xp1 = clampIndex(x + 1, imageWidth);
+        const ym1 = clampIndex(y - 1, imageHeight);
+        const yp1 = clampIndex(y + 1, imageHeight);
+
+        // neighbor indices (replicate borders)
+        const i00 = idx(xm1, ym1), i10 = idx(x, ym1), i20 = idx(xp1, ym1);
+        const i01 = idx(xm1, y),   i11 = idx(x, y),   i21 = idx(xp1, y);
+        const i02 = idx(xm1, yp1), i12 = idx(x, yp1), i22 = idx(xp1, yp1);
+
+        // luminance (grayscale) neighborhood
+        const L00 = getLuma(i00), L10 = getLuma(i10), L20 = getLuma(i20);
+        const L01 = getLuma(i01), /* L11 = getLuma(i11); not needed */     L21 = getLuma(i21);
+        const L02 = getLuma(i02), L12 = getLuma(i12), L22 = getLuma(i22);
+
+        // Prewitt gradients
+        // Gx: right column minus left column
+        const gx = (L20 + L21 + L22) - (L00 + L01 + L02);
+        // Gy: top row minus bottom row
+        const gy = (L00 + L10 + L20) - (L02 + L12 + L22);
+
+        let out: number;
+        if (direction === 'x') {
+          out = Math.abs(gx) * scaleX;
+        } else if (direction === 'y') {
+          out = Math.abs(gy) * scaleY;
+        } else {
+          out = Math.hypot(gx, gy) * scaleMag;
+        }
+
+        const v = Math.max(0, Math.min(255, Math.round(out)));
+        pixels[i11]     = v;
+        pixels[i11 + 1] = v;
+        pixels[i11 + 2] = v;
+        // alpha preserved (pixels[i11 + 3])
+      }
+    }
+
+    return imageData;
+  });
+}
+
+sobel(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
+  this.runOnImageData((imageData) => {
+    const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+    const src = new Uint8ClampedArray(pixels); // snapshot
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const idx = (x: number, y: number) => (y * imageWidth + x) * 4;
+
+    // declare before any use
+    const getLuma = (base: number) =>
+      0.299 * src[base] + 0.587 * src[base + 1] + 0.114 * src[base + 2];
+
+    // scale maxima to 255 (|gx|max = |gy|max = 4*255)
+    const scaleX = 1 / 4;
+    const scaleY = 1 / 4;
+    const scaleMag = 1 / (4 * Math.SQRT2);
+
+    for (let y = 0; y < imageHeight; y++) {
+      for (let x = 0; x < imageWidth; x++) {
+        const xm1 = clampIndex(x - 1, imageWidth);
+        const xp1 = clampIndex(x + 1, imageWidth);
+        const ym1 = clampIndex(y - 1, imageHeight);
+        const yp1 = clampIndex(y + 1, imageHeight);
+
+        // neighbor indices (replicate borders)
+        const i00 = idx(xm1, ym1), i10 = idx(x, ym1), i20 = idx(xp1, ym1);
+        const i01 = idx(xm1, y),   i11 = idx(x, y),   i21 = idx(xp1, y);
+        const i02 = idx(xm1, yp1), i12 = idx(x, yp1), i22 = idx(xp1, yp1);
+
+        // luminance values
+        const L00 = getLuma(i00), L10 = getLuma(i10), L20 = getLuma(i20);
+        const L01 = getLuma(i01),                         L21 = getLuma(i21);
+        const L02 = getLuma(i02), L12 = getLuma(i12), L22 = getLuma(i22);
+
+        // Sobel gradients:
+        // Gx = [[-1,0,1],[-2,0,2],[-1,0,1]]
+        const gx = (L20 + 2 * L21 + L22) - (L00 + 2 * L01 + L02);
+        // Gy = [[ 1,2,1],[ 0,0,0],[-1,-2,-1]]
+        const gy = (L00 + 2 * L10 + L20) - (L02 + 2 * L12 + L22);
+
+        let out: number;
+        if (direction === 'x') {
+          out = Math.abs(gx) * scaleX;
+        } else if (direction === 'y') {
+          out = Math.abs(gy) * scaleY;
+        } else {
+          out = Math.hypot(gx, gy) * scaleMag;
+        }
+
+        const v = Math.max(0, Math.min(255, Math.round(out)));
+        pixels[i11]     = v;
+        pixels[i11 + 1] = v;
+        pixels[i11 + 2] = v;
+        // alpha preserved
+      }
+    }
+
+    return imageData;
+  });
+}
+
+laplacian( mode: 'abs' | 'signed' = 'abs', neighbors: 4 | 8 = 8) {
+  this.runOnImageData((imageData) => {
+    const { width: W, height: H, data: pixels } = imageData;
+    const src = new Uint8ClampedArray(pixels); // snapshot
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const idx = (x: number, y: number) => (y * W + x) * 4;
+    const luma = (p: number) => 0.299 * src[p] + 0.587 * src[p + 1] + 0.114 * src[p + 2];
+
+    // máximo teórico: 4*255 (viz.4) ou 8*255 (viz.8) → escala p/ 255
+    const scale = (neighbors === 4) ? (1 / 4) : (1 / 8);
+
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const xm1 = clampIndex(x - 1, W), xp1 = clampIndex(x + 1, W);
+        const ym1 = clampIndex(y - 1, H), yp1 = clampIndex(y + 1, H);
+
+        const i00 = idx(xm1, ym1), i10 = idx(x, ym1), i20 = idx(xp1, ym1);
+        const i01 = idx(xm1, y),   i11 = idx(x, y),   i21 = idx(xp1, y);
+        const i02 = idx(xm1, yp1), i12 = idx(x, yp1), i22 = idx(xp1, yp1);
+
+        const L00 = luma(i00), L10 = luma(i10), L20 = luma(i20);
+        const L01 = luma(i01), L11 = luma(i11), L21 = luma(i21);
+        const L02 = luma(i02), L12 = luma(i12), L22 = luma(i22);
+
+        let L: number;
+        if (neighbors === 4) {
+          // kernel: [0  1  0; 1 -4 1; 0  1  0]
+          L = (L10 + L01 + L21 + L12) - 4 * L11;
+        } else {
+          // kernel: [1  1  1; 1 -8 1; 1  1  1]
+          L = (L00 + L10 + L20 + L01 + L21 + L02 + L12 + L22) - 8 * L11;
+        }
+
+        let out: number;
+        if (mode === 'abs') {
+          out = Math.abs(L) * scale;                 // 0..255
+        } else { // 'signed' → mapeia [-M..M] para [0..255], centro=128
+          out = L * scale * 0.5 + 127.5;
+        }
+
+        const v = Math.max(0, Math.min(255, Math.round(out)));
+        pixels[i11]     = v;
+        pixels[i11 + 1] = v;
+        pixels[i11 + 2] = v;
+        // alpha preservado
+      }
+    }
+    return imageData;
+  });
+}
+
 
 }
 

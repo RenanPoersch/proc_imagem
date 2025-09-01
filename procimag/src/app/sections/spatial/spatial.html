@@ -68,15 +68,75 @@
         disabled:cursor-not-allowed">
                 GAUUSS
             </button>
+            <div class="space-y-3 shadow-md cursor-pointer p-3 text-sm bg-white rounded mb-3">
+                <label class="text-sm">σ</label>
+                <input type="range" [min]="0.1" [max]="10" [step]="0.1" [(ngModel)]="sigma" (input)="gaussianBlurEx()"
+                    [disabled]="!imageService.hasProcessableImage"
+                    class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+                <span class="text-xs text-zinc-600">{{sigma}}</span>
+            </div>
         </div>
     </div>
-    
-    <div class="space-y-3 shadow-md cursor-pointer p-3 text-sm bg-white rounded mb-3">
-        <label class="text-sm">σ</label>
-        <input type="range"  [min]="0.1" [max]="10" [step]="0.1" [(ngModel)]="sigma" (input)="gaussianBlurEx()"
-            [disabled]="!imageService.hasProcessableImage"
-            class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
-        <span class="text-xs text-zinc-600">{{sigma}}</span>
+    <div class="col-span-1">
+        <div class="grid gap-3">
+            <button (click)="prewitt()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+                Prewitt
+            </button>
+        </div>
+        <div  class="grid grid-cols-3 gap-3">
+            <div class="grid gap-3 mt-4">
+                <button (click)="sobel('magnitude')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Sobel magnitude
+                </button>
+            </div>
+            <div class="grid gap-3 mt-4">
+                <button (click)="sobel('x')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Sobel x
+                </button>
+            </div>
+             <div class="grid gap-3 mt-4">
+                <button (click)="sobel('y')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Sobel y
+                </button>
+            </div>
+        </div>
+        <div  class="grid grid-cols-2 mt-4 gap-3 h-full">
+            <div class="grid gap-3 col-span-1">
+                <button (click)="laplace('abs', 4)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Laplaciano ABS 4
+                </button>
+            </div>
+            <div class="grid gap-3 col-span-1">
+                <button (click)="laplace('signed', 4)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Laplaciano Signed 4
+                </button>
+            </div>
+            <div class="grid col-span-1">
+                <button (click)="laplace('abs', 8)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Laplaciano ABS 8
+                </button>
+            </div>
+            <div class="grid col-span-1">
+                <button (click)="laplace('signed', 8)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Laplaciano Signed 8
+                </button>
+            </div>
+        </div>
     </div>
 </div>
-

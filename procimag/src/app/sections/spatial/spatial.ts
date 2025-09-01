@@ -16,6 +16,8 @@ export class Spatial {
   kind: 'min' | 'max' | 'mean' = 'min'
   sigma = 0.5 
 
+  lpNeig: 4 | 8 = 8;
+
   applyLocalFilter() {
     this.imageService.applyLocalFilter(this.kind, this.window);
   }
@@ -34,6 +36,18 @@ export class Spatial {
 
   gaussianBlurEx() {
     this.imageService.gaussianBlurEx(this.window, this.sigma);
+  }
+
+  prewitt() {
+    this.imageService.prewitt();
+  }
+
+  sobel(dir: 'magnitude' | 'x' | 'y') {
+    this.imageService.sobel(dir);
+  }
+
+  laplace(mode: 'abs' | 'signed', neig?: 4 | 8) {
+    this.imageService.laplacian(mode, neig);
   }
 
   changeFilterKind(kind: 'min' | 'max' | 'mean') {
