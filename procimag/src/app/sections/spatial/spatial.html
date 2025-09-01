@@ -1,1 +1,82 @@
-<p>spatial works!</p>
+<div class="grid grid-cols-3 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
+    <div class="col-span-1">
+        <div class="grid gap-3">
+            <div class="space-y-3 shadow-md cursor-pointer p-3 text-sm bg-white rounded mb-3">
+                <label class="text-sm">Kernel</label>
+                <input type="range" min="3" max="31" step="2" [(ngModel)]="window"
+                    [disabled]="!imageService.hasProcessableImage"
+                    class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+                <span class="text-xs text-zinc-600">{{window}}</span>
+            </div>
+        </div>
+        <div class="grid gap-3">
+            <button (click)="changeFilterKind('min')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                MIN
+            </button>
+        </div>
+        <div class="grid gap-3 mt-4">
+            <button (click)="changeFilterKind('max')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+                MEAN
+            </button>
+        </div>
+        <div class="grid gap-3 mt-4">
+            <button (click)="changeFilterKind('mean')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+                MAX
+            </button>
+        </div>
+        <div class="grid gap-3 mt-4">
+            <button (click)="applyAverage()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+                MEDIAN
+            </button>
+        </div>
+    </div>
+    <div class="col-span-1">
+        <div class="grid gap-3 ">
+            <div class="space-y-3 shadow-md cursor-pointer p-3 text-sm bg-white rounded mb-3">
+                <label class="text-sm">Order value</label>
+                <input type="range" min="1" [max]="window * window" step="1" [(ngModel)]="order"
+                    [disabled]="!imageService.hasProcessableImage"
+                    class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+                <span class="text-xs text-zinc-600">{{order}}</span>
+            </div>
+        </div>
+        <div class="grid gap-3">
+            <button (click)="applyOrder()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                ORDER
+            </button>
+        </div>
+        <div class="grid gap-3 mt-4">
+            <button (click)="conservativeSmoothing()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+                CONSERVATIVE SMOOTHING
+            </button>
+        </div>
+        <div class="grid gap-3 mt-4">
+            <button (click)="gaussianBlurEx()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+                GAUUSS
+            </button>
+        </div>
+    </div>
+    
+    <div class="space-y-3 shadow-md cursor-pointer p-3 text-sm bg-white rounded mb-3">
+        <label class="text-sm">σ</label>
+        <input type="range"  [min]="0.1" [max]="10" [step]="0.1" [(ngModel)]="sigma" (input)="gaussianBlurEx()"
+            [disabled]="!imageService.hasProcessableImage"
+            class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
+        <span class="text-xs text-zinc-600">{{sigma}}</span>
+    </div>
+</div>
+

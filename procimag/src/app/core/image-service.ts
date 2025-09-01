@@ -955,6 +955,373 @@ export class ImageService {
   });
 }
 
+// equalizeHistogram() {
+//   this.runOnImageData((imageData) => {
+//     const d = imageData.data;
+//     const gray = new Uint8ClampedArray(d.length / 4);
+
+//     // 1) Converte para escala de cinza
+//     for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+//       gray[k] = (d[i] + d[i+1] + d[i+2]) / 3;
+//     }
+
+//     // 2) Histograma
+//     const hist = new Array(256).fill(0);
+//     gray.forEach(v => hist[v]++);
+
+//     // 3) CDF
+//     const total = gray.length;
+//     const cdf = new Array(256).fill(0);
+//     cdf[0] = hist[0] / total;
+//     for (let i = 1; i < 256; i++) {
+//       cdf[i] = cdf[i-1] + hist[i] / total;
+//     }
+
+//     // 4) Mapeamento
+//     const map = cdf.map(v => Math.round(v * 255));
+
+//     // 5) Aplica
+//     for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+//       const v = map[gray[k]];
+//       d[i] = d[i+1] = d[i+2] = v; // aplica mesmo valor nos 3 canais
+//     }
+
+//     return imageData;
+//   });
+// }
+
+
+// ╔══════════════════╗
+// ║     ESPACIAL     ║
+// ╚══════════════════╝
+
+
+public applyLocalFilter(kind: 'min' | 'max' | 'mean', size: number = 3) {
+
+  const radius = Math.floor(size / 2);
+
+  this.runOnImageData((imageData) => {
+  const { width, height, data: array } = imageData;
+  const src = new Uint8ClampedArray(array);
+
+  const clamp = (v: number, lo: number, hi: number) => {
+    return v < lo ? lo : v > hi ? hi : v
+  };
+
+  const idx = (x: number, y: number) => {
+    return (y * width + x) * 4;
   }
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+
+      let redSum = 0, greenSum = 0, blueSum = 0;
+      let redMin = 255, greenMin = 255, blueMin = 255;
+      let redMax = 0, greenMax = 0, blueMax = 0;
+
+      for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+      const neighborY = clamp(y + offsetY, 0, height - 1);
+
+      for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+        const neighborX = clamp(x + offsetX, 0, width - 1);
+        const neighborIndex = idx(neighborX, neighborY);
+
+        const neighborRed   = src[neighborIndex];
+        const neighborGreen = src[neighborIndex + 1];
+        const neighborBlue  = src[neighborIndex + 2];
+
+        // mean
+        redSum   += neighborRed;
+        greenSum += neighborGreen;
+        blueSum  += neighborBlue;
+
+        // min
+        if (neighborRed   < redMin)   redMin   = neighborRed;
+        if (neighborGreen < greenMin) greenMin = neighborGreen;
+        if (neighborBlue  < blueMin)  blueMin  = neighborBlue;
+
+        // max
+        if (neighborRed   > redMax)   redMax   = neighborRed;
+        if (neighborGreen > greenMax) greenMax = neighborGreen;
+        if (neighborBlue  > blueMax)  blueMax  = neighborBlue;
+      }
+    }
+
+      const d = idx(x, y);
+
+      if (kind === 'mean') {
+        const count = size * size;
+        array[d] = Math.round(redSum / count);
+        array[d + 1] = Math.round(greenSum / count);
+        array[d + 2] = Math.round(blueSum / count);
+
+      } else if (kind === 'min') {
+          array[d] = redMin;
+          array[d + 1] = greenMin;
+          array[d + 2] = blueMin;
+
+      } else { // 'max'
+          array[d] = redMax;
+          array[d + 1] = greenMax;
+          array[d + 2] = blueMax;
+      }
+    }
+  }
+  return imageData;
+  });
+}
+
+applyMedianFilter(size: number = 3) {
+
+    const radius = Math.floor(size / 2);
+
+    this.runOnImageData((imageData) => {
+      const { width, height, data: array } = imageData;
+      const src = new Uint8ClampedArray(array);
+
+      const clamp = (v: number, lo: number, hi: number) => {
+        return v < lo ? lo : v > hi ? hi : v
+      };
+
+      const idx = (x: number, y: number) => {
+        return (y * width + x) * 4;
+      }
+
+      const rVals: number[] = [];
+      const gVals: number[] = [];
+      const bVals: number[] = [];
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          rVals.length = 0; gVals.length = 0; bVals.length = 0;
+
+          for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+            const neighborY = clamp(y + offsetY, 0, height - 1);
+            for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+              const neighborX = clamp(x + offsetX, 0, width - 1);
+              const neighborIndex = idx(neighborX, neighborY);
+
+              rVals.push(src[neighborIndex]);
+              gVals.push(src[neighborIndex + 1]);
+              bVals.push(src[neighborIndex + 2]);
+            }
+          }
+
+          const d = idx(x, y);
+
+          array[d] = this.medianOf(rVals);
+          array[d + 1] = this.medianOf(gVals);
+          array[d + 2] = this.medianOf(bVals);
+        }
+      }
+
+      return imageData;
+    });
+  }
+
+  medianOf(array: number[]) {
+    const length = array.length;
+    if (length === 0) {
+      return 0;
+    }
+    array.sort((a, b) => a - b);
+    const mid = Math.floor(length / 2);
+    if (length % 2) {
+      return array[mid];
+    }
+    return Math.round((array[mid - 1] + array[mid]) / 2);
+  }
+
+
+applyOrderFilter(windowSize: number = 3, k: number) {
+
+  const radius = Math.floor(windowSize / 2);
+
+  this.runOnImageData((imageData) => {
+  const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+  const sourcePixels = new Uint8ClampedArray(pixels); 
+
+  const clamp = (v: number, lo: number, hi: number) => {
+    return v < lo ? lo : v > hi ? hi : v
+  };
+
+  const idx = (x: number, y: number) => {
+    return (y * imageWidth + x) * 4;
+  }
+
+  const redValues: number[] = [];
+  const greenValues: number[] = [];
+  const blueValues: number[] = [];
+
+  for (let pixelY = 0; pixelY < imageHeight; pixelY++) {
+    for (let pixelX = 0; pixelX < imageWidth; pixelX++) {
+     redValues.length = 0; 
+     greenValues.length = 0; 
+     blueValues.length = 0;
+
+      for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+        const neighborY = clamp(pixelY + offsetY, 0, imageHeight - 1);
+        for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+          const neighborX = clamp(pixelX + offsetX, 0, imageWidth - 1);
+          const neighborIndex = idx(neighborX, neighborY);
+
+          redValues.push(sourcePixels[neighborIndex]);
+          greenValues.push(sourcePixels[neighborIndex + 1]);
+          blueValues.push(sourcePixels[neighborIndex + 2]);
+        }
+      }
+
+    const destIndex = idx(pixelX, pixelY);
+    pixels[destIndex] = this.kthOrder(redValues, k);
+    pixels[destIndex + 1] = this.kthOrder(greenValues, k);
+    pixels[destIndex + 2] = this.kthOrder(blueValues, k);
+    }
+  }
+
+  return imageData;
+  });
+}
+
+
+kthOrder(values: number[], k: number): number {
+  if (k < 1) {
+    k = 1;
+  }
+  if (k > values.length) {
+    k = values.length;
+  }
+  values.sort((a, b) => a - b);
+  return values[k - 1];
+}
+
+  
+  conservativeSmoothing(window: number) {
+
+    const radius = Math.floor(window / 2);
+
+    this.runOnImageData((imageData) => {
+      const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+      const sourcePixels = new Uint8ClampedArray(pixels);
+
+      const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
+      const pixelIndex = (x: number, y: number) => ((y * imageWidth + x) << 2);
+
+      for (let y = 0; y < imageHeight; y++) {
+        for (let x = 0; x < imageWidth; x++) {
+          let redMin = 255, greenMin = 255, blueMin = 255;
+          let redMax = 0,   greenMax = 0,   blueMax = 0;
+
+          // vizinhança N×N (replicate nas bordas)
+          for (let offY = -radius; offY <= radius; offY++) {
+            const ny = clamp(y + offY, 0, imageHeight - 1);
+            for (let offX = -radius; offX <= radius; offX++) {
+              if ( offX === 0 && offY === 0) continue; // exclui centro
+              const nx = clamp(x + offX, 0, imageWidth - 1);
+              const nIdx = pixelIndex(nx, ny);
+
+              const r = sourcePixels[nIdx];
+              const g = sourcePixels[nIdx + 1];
+              const b = sourcePixels[nIdx + 2];
+
+              if (r < redMin)   redMin   = r;
+              if (g < greenMin) greenMin = g;
+              if (b < blueMin)  blueMin  = b;
+              if (r > redMax)   redMax   = r;
+              if (g > greenMax) greenMax = g;
+              if (b > blueMax)  blueMax  = b;
+            }
+          }
+
+          const dIdx = pixelIndex(x, y);
+          const r0 = sourcePixels[dIdx], g0 = sourcePixels[dIdx + 1], b0 = sourcePixels[dIdx + 2];
+
+          pixels[dIdx]     = clamp(r0, redMin,   redMax);
+          pixels[dIdx + 1] = clamp(g0, greenMin, greenMax);
+          pixels[dIdx + 2] = clamp(b0, blueMin,  blueMax);
+
+        }
+      }
+      return imageData;
+    });
+  }
+
+  gaussianBlurEx(window: number = 3, sigma: number): void {
+
+    const radius = Math.floor(window / 2);
+    // build 1D gaussian kernel, normalized
+    const kernel = new Float32Array(window);
+    let sum = 0;
+
+    for (let i = -radius, j = 0; i <= radius; i++, j++) {
+      const v = Math.exp(-(i * i) / (2 * sigma * sigma));
+      kernel[j] = v; 
+      sum += v;
+    }
+
+    for (let j = 0; j < window; j++) {
+       kernel[j] /= sum;
+    }
+
+    const clampIndex = (i: number, n: number) => {
+      return (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    }
+
+    this.runOnImageData((imageData) => {
+      const { width: W, height: H, data: pixels } = imageData;
+      const src = new Uint8ClampedArray(pixels);
+
+      const idx = (x: number, y: number) =>  {
+        return (y * W + x) * 4;
+      }
+
+      // temp buffers for horizontal pass
+      const tmpR = new Float32Array(W * H);
+      const tmpG = new Float32Array(W * H);
+      const tmpB = new Float32Array(W * H);
+
+      // horizontal pass
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          let rAcc = 0, gAcc = 0, bAcc = 0;
+          for (let k = -radius; k <= radius; k++) {
+            const nx = clampIndex(x + k, W);
+            const w = kernel[k + radius];
+            const sIdx = idx(nx, y);
+            rAcc += src[sIdx] * w;
+            gAcc += src[sIdx + 1] * w;
+            bAcc += src[sIdx + 2] * w;
+          }
+          const t = y * W + x;
+          tmpR[t] = rAcc; 
+          tmpG[t] = gAcc; 
+          tmpB[t] = bAcc;
+        }
+      }
+
+      // vertical pass
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          let rAcc = 0, gAcc = 0, bAcc = 0;
+          for (let k = -radius; k <= radius; k++) {
+            const ny = clampIndex(y + k, H);
+            const w = kernel[k + radius];
+            const t = ny * W + x;
+            rAcc += tmpR[t] * w;
+            gAcc += tmpG[t] * w;
+            bAcc += tmpB[t] * w;
+          }
+          const d = idx(x, y);
+          pixels[d] = Math.round(rAcc);
+          pixels[d + 1] = Math.round(gAcc);
+          pixels[d + 2] = Math.round(bAcc);
+        }
+      }
+
+      return imageData;
+    });
+  }
+
+
+}
 
 
