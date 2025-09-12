@@ -18,8 +18,7 @@ export class Morfologic {
     this.imageService.erode()
   }
  
-  contour() {
-    this.imageService.contour()
+  contour(mode: 'inner' | 'outer' | 'gradient' = 'gradient') {
+    this.imageService.contour(mode)
   }
-
 }

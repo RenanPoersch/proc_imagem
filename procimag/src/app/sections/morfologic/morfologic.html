@@ -12,12 +12,25 @@
          disabled:cursor-not-allowed">
         Erosão
       </button>
+       <div class="grid grid-cols-3 gap-3">
+
+     
+      <button (click)="contour('inner')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+      disabled:bg-zinc-200 disabled:text-zinc-400
+      disabled:cursor-not-allowed">
+        Contorno interno
+      </button>
+      <button (click)="contour('outer')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+      disabled:bg-zinc-200 disabled:text-zinc-400
+      disabled:cursor-not-allowed">
+        Contorno externo
+      </button>
       <button (click)="contour()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
       disabled:bg-zinc-200 disabled:text-zinc-400
       disabled:cursor-not-allowed">
-        Contorno
+        Contorno gradiente
       </button>
-
+  </div>
     </div>
     <div class="grid grid-cols-2 gap-3 mt-4">
       <div class="shadow-md text-center p-3 text-sm bg-white rounded

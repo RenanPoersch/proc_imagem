@@ -1398,7 +1398,7 @@ sobel(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
   this.runOnImageData((imageData) => {
     const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
     const src = new Uint8ClampedArray(pixels); 
-    
+
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const idx = (x: number, y: number) => (y * imageWidth + x) * 4;
 
@@ -1556,15 +1556,13 @@ applyCustomKernel(kernel: number[]) {
 // ║     MORFOLOG     ║
 // ╚══════════════════╝
 
-dilate(window: number = 3): void {
-  // Morphological dilation (flat SE): local max in an N×N neighborhood (replicate borders)
-  let size = Math.max(3, Math.trunc(window));
-  if (size % 2 === 0) size += 1;
-  const radius = Math.floor(size / 2);
+dilate() {
+
+  const radius = Math.floor(3 / 2);
 
   this.runOnImageData((imageData) => {
     const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
-    const sourcePixels = new Uint8ClampedArray(pixels); // snapshot
+    const sourcePixels = new Uint8ClampedArray(pixels); 
 
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const pixelIndex = (x: number, y: number) => (y * imageWidth + x) * 4;
@@ -1583,9 +1581,15 @@ dilate(window: number = 3): void {
             const g = sourcePixels[n + 1];
             const b = sourcePixels[n + 2];
 
-            if (r > redMax)   redMax   = r;
-            if (g > greenMax) greenMax = g;
-            if (b > blueMax)  blueMax  = b;
+            if (r > redMax) {
+              redMax = r;
+            } 
+            if (g > greenMax) {
+              greenMax = g;
+            } 
+            if (b > blueMax) {
+              blueMax  = b;
+            } 
           }
         }
 
@@ -1600,15 +1604,13 @@ dilate(window: number = 3): void {
 }
 
 
- erode(window: number = 3): void {
-  // Morphological erosion (flat SE): local min in an N×N neighborhood (replicate borders)
-  let size = Math.max(3, Math.trunc(window));
-  if (size % 2 === 0) size += 1;
-  const radius = Math.floor(size / 2);
+ erode() {
+
+  const radius = Math.floor(3 / 2);
 
   this.runOnImageData((imageData) => {
     const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
-    const sourcePixels = new Uint8ClampedArray(pixels); // snapshot
+    const sourcePixels = new Uint8ClampedArray(pixels); 
 
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const pixelIndex = (x: number, y: number) => (y * imageWidth + x) * 4;
@@ -1627,9 +1629,15 @@ dilate(window: number = 3): void {
             const g = sourcePixels[n + 1];
             const b = sourcePixels[n + 2];
 
-            if (r < redMin)   redMin   = r;
-            if (g < greenMin) greenMin = g;
-            if (b < blueMin)  blueMin  = b;
+            if (r < redMin) {
+              redMin   = r;
+            } 
+            if (g < greenMin) {
+              greenMin = g;
+            }
+            if (b < blueMin) {
+              blueMin  = b;
+            } 
           }
         }
 
@@ -1643,21 +1651,17 @@ dilate(window: number = 3): void {
   });
 }
 
-public contour(
-  window: number = 3,
-  mode: 'inner' | 'outer' | 'gradient' = 'gradient'
-): void {
+public contour(mode: 'inner' | 'outer' | 'gradient' = 'gradient') {
   // Contorno morfológico:
   // - 'inner'    : original - erode(original)
   // - 'outer'    : dilate(original) - original
-  // - 'gradient' : dilate(original) - erode(original)   (padrão)
-  let size = Math.max(3, Math.trunc(window));
-  if (size % 2 === 0) size += 1;
-  const radius = Math.floor(size / 2);
+  // - 'gradient' : dilate(original) - erode(original)
+
+  const radius = Math.floor(3 / 2);
 
   this.runOnImageData((imageData) => {
     const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
-    const source = new Uint8ClampedArray(pixels); // snapshot
+    const source = new Uint8ClampedArray(pixels); 
 
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const pixelIndex = (x: number, y: number) => (y * imageWidth + x) * 4;
@@ -1667,7 +1671,6 @@ public contour(
         let rMin = 255, gMin = 255, bMin = 255;
         let rMax = 0,   gMax = 0,   bMax = 0;
 
-        // varre vizinhança N×N (bordas replicadas)
         for (let offY = -radius; offY <= radius; offY++) {
           const ny = clampIndex(y + offY, imageHeight);
           for (let offX = -radius; offX <= radius; offX++) {
@@ -1678,8 +1681,24 @@ public contour(
             const g = source[nIdx + 1];
             const b = source[nIdx + 2];
 
-            if (r < rMin) rMin = r; if (g < gMin) gMin = g; if (b < bMin) bMin = b;
-            if (r > rMax) rMax = r; if (g > gMax) gMax = g; if (b > bMax) bMax = b;
+            if (r < rMin) { 
+              rMin = r; 
+            }
+            if (g < gMin) { 
+                gMin = g; 
+            }
+            if (b < bMin) { 
+                bMin = b; 
+            }
+            if (r > rMax) { 
+                rMax = r; 
+            }
+            if (g > gMax) { 
+                gMax = g; 
+            }
+            if (b > bMax) { 
+                bMax = b; 
+            }
           }
         }
 
@@ -1687,15 +1706,15 @@ public contour(
         const r0 = source[dIdx], g0 = source[dIdx + 1], b0 = source[dIdx + 2];
 
         let rOut: number, gOut: number, bOut: number;
+
         if (mode === 'inner') {
           rOut = r0 - rMin; gOut = g0 - gMin; bOut = b0 - bMin;
         } else if (mode === 'outer') {
           rOut = rMax - r0; gOut = gMax - g0; bOut = bMax - b0;
-        } else { // 'gradient'
+        } else {
           rOut = rMax - rMin; gOut = gMax - gMin; bOut = bMax - bMin;
         }
 
-        // clamp 0..255
         pixels[dIdx]     = rOut < 0 ? 0 : (rOut > 255 ? 255 : rOut | 0);
         pixels[dIdx + 1] = gOut < 0 ? 0 : (gOut > 255 ? 255 : gOut | 0);
         pixels[dIdx + 2] = bOut < 0 ? 0 : (bOut > 255 ? 255 : bOut | 0);
