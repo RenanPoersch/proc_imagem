@@ -18,6 +18,8 @@ export class Spatial {
 
   lpNeig: 4 | 8 = 8;
 
+  kernel: number[] = Array(9).fill(0);
+
   applyLocalFilter() {
     this.imageService.applyLocalFilter(this.kind, this.window);
   }
@@ -38,8 +40,8 @@ export class Spatial {
     this.imageService.gaussianBlurEx(this.window, this.sigma);
   }
 
-  prewitt() {
-    this.imageService.prewitt();
+  prewitt(dir?: 'magnitude' | 'x' | 'y') {
+    this.imageService.prewitt(dir);
   }
 
   sobel(dir: 'magnitude' | 'x' | 'y') {
@@ -48,6 +50,10 @@ export class Spatial {
 
   laplace(mode: 'abs' | 'signed', neig?: 4 | 8) {
     this.imageService.laplacian(mode, neig);
+  }
+
+  applyCustomKernel(kernel: number[]) {
+    this.imageService.applyCustomKernel(kernel);
   }
 
   changeFilterKind(kind: 'min' | 'max' | 'mean') {

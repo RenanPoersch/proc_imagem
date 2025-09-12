@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ImageService } from '../../core/image-service';
 
 @Component({
   selector: 'app-morfologic',
@@ -7,5 +8,18 @@ import { Component } from '@angular/core';
   styleUrl: './morfologic.css'
 })
 export class Morfologic {
+  constructor(public imageService: ImageService) {}
+
+  dilate() {
+    this.imageService.dilate()
+  }
+  
+  erode() {
+    this.imageService.erode()
+  }
+ 
+  contour() {
+    this.imageService.contour()
+  }
 
 }

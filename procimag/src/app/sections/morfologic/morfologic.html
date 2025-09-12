@@ -1,1 +1,36 @@
-<p>morfologic works!</p>
+<div class="grid grid-cols-3 gap-4 p-4 mt-2 ml-8 mr-8 items-start">
+  <div class="col-span-3">
+    <div class="grid grid-cols-3 gap-3">
+      <button (click)="dilate()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:cursor-not-allowed">
+        Dilatação
+      </button>
+
+      <button (click)="erode()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+         disabled:bg-zinc-200 disabled:text-zinc-400
+         disabled:cursor-not-allowed">
+        Erosão
+      </button>
+      <button (click)="contour()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+      disabled:bg-zinc-200 disabled:text-zinc-400
+      disabled:cursor-not-allowed">
+        Contorno
+      </button>
+
+    </div>
+    <div class="grid grid-cols-2 gap-3 mt-4">
+      <div class="shadow-md text-center p-3 text-sm bg-white rounded
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+        Abertura = Erosão + Dilatação
+      </div>
+
+      <div class="shadow-md text-center p-3 text-sm bg-white rounded
+        disabled:bg-zinc-200 disabled:text-zinc-400
+        disabled:cursor-not-allowed">
+        Fechamento = Dilatação + Erosão
+      </div>
+    </div>
+  </div>
+</div>

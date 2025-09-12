@@ -951,47 +951,46 @@ export class ImageService {
       d[i]   = R | 0;
       d[i+1] = G | 0;
       d[i+2] = B | 0;
-      // d[i+3] alpha mantido
     }
 
     return imageData;
   });
 }
 
-// equalizeHistogram() {
-//   this.runOnImageData((imageData) => {
-//     const d = imageData.data;
-//     const gray = new Uint8ClampedArray(d.length / 4);
+equalizeHistogra2m() {
+  this.runOnImageData((imageData) => {
+    const d = imageData.data;
+    const gray = new Uint8ClampedArray(d.length / 4);
 
-//     // 1) Converte para escala de cinza
-//     for (let i = 0, k = 0; i < d.length; i += 4, k++) {
-//       gray[k] = (d[i] + d[i+1] + d[i+2]) / 3;
-//     }
+    // 1) Converte para escala de cinza
+    for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+      gray[k] = (d[i] + d[i+1] + d[i+2]) / 3;
+    }
 
-//     // 2) Histograma
-//     const hist = new Array(256).fill(0);
-//     gray.forEach(v => hist[v]++);
+    // 2) Histograma
+    const hist = new Array(256).fill(0);
+    gray.forEach(v => hist[v]++);
 
-//     // 3) CDF
-//     const total = gray.length;
-//     const cdf = new Array(256).fill(0);
-//     cdf[0] = hist[0] / total;
-//     for (let i = 1; i < 256; i++) {
-//       cdf[i] = cdf[i-1] + hist[i] / total;
-//     }
+    // 3) CDF
+    const total = gray.length;
+    const cdf = new Array(256).fill(0);
+    cdf[0] = hist[0] / total;
+    for (let i = 1; i < 256; i++) {
+      cdf[i] = cdf[i-1] + hist[i] / total;
+    }
 
-//     // 4) Mapeamento
-//     const map = cdf.map(v => Math.round(v * 255));
+    // 4) Mapeamento
+    const map = cdf.map(v => Math.round(v * 255));
 
-//     // 5) Aplica
-//     for (let i = 0, k = 0; i < d.length; i += 4, k++) {
-//       const v = map[gray[k]];
-//       d[i] = d[i+1] = d[i+2] = v; // aplica mesmo valor nos 3 canais
-//     }
+    // 5) Aplica
+    for (let i = 0, k = 0; i < d.length; i += 4, k++) {
+      const v = map[gray[k]];
+      d[i] = d[i+1] = d[i+2] = v; // aplica mesmo valor nos 3 canais
+    }
 
-//     return imageData;
-//   });
-// }
+    return imageData;
+  });
+}
 
 
 // ╔══════════════════╗
@@ -999,82 +998,82 @@ export class ImageService {
 // ╚══════════════════╝
 
 
-public applyLocalFilter(kind: 'min' | 'max' | 'mean', size: number = 3) {
+  applyLocalFilter(kind: 'min' | 'max' | 'mean', size: number = 3) {
 
-  const radius = Math.floor(size / 2);
+    const radius = Math.floor(size / 2);
 
-  this.runOnImageData((imageData) => {
-  const { width, height, data: array } = imageData;
-  const src = new Uint8ClampedArray(array);
+    this.runOnImageData((imageData) => {
+    const { width, height, data: array } = imageData;
+    const src = new Uint8ClampedArray(array);
 
-  const clamp = (v: number, lo: number, hi: number) => {
-    return v < lo ? lo : v > hi ? hi : v
-  };
+    const clamp = (v: number, lo: number, hi: number) => {
+      return v < lo ? lo : v > hi ? hi : v
+    };
 
-  const idx = (x: number, y: number) => {
-    return (y * width + x) * 4;
-  }
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-
-      let redSum = 0, greenSum = 0, blueSum = 0;
-      let redMin = 255, greenMin = 255, blueMin = 255;
-      let redMax = 0, greenMax = 0, blueMax = 0;
-
-      for (let offsetY = -radius; offsetY <= radius; offsetY++) {
-      const neighborY = clamp(y + offsetY, 0, height - 1);
-
-      for (let offsetX = -radius; offsetX <= radius; offsetX++) {
-        const neighborX = clamp(x + offsetX, 0, width - 1);
-        const neighborIndex = idx(neighborX, neighborY);
-
-        const neighborRed   = src[neighborIndex];
-        const neighborGreen = src[neighborIndex + 1];
-        const neighborBlue  = src[neighborIndex + 2];
-
-        // mean
-        redSum   += neighborRed;
-        greenSum += neighborGreen;
-        blueSum  += neighborBlue;
-
-        // min
-        if (neighborRed   < redMin)   redMin   = neighborRed;
-        if (neighborGreen < greenMin) greenMin = neighborGreen;
-        if (neighborBlue  < blueMin)  blueMin  = neighborBlue;
-
-        // max
-        if (neighborRed   > redMax)   redMax   = neighborRed;
-        if (neighborGreen > greenMax) greenMax = neighborGreen;
-        if (neighborBlue  > blueMax)  blueMax  = neighborBlue;
-      }
+    const idx = (x: number, y: number) => {
+      return (y * width + x) * 4;
     }
 
-      const d = idx(x, y);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
 
-      if (kind === 'mean') {
-        const count = size * size;
-        array[d] = Math.round(redSum / count);
-        array[d + 1] = Math.round(greenSum / count);
-        array[d + 2] = Math.round(blueSum / count);
+        let redSum = 0, greenSum = 0, blueSum = 0;
+        let redMin = 255, greenMin = 255, blueMin = 255;
+        let redMax = 0, greenMax = 0, blueMax = 0;
 
-      } else if (kind === 'min') {
-          array[d] = redMin;
-          array[d + 1] = greenMin;
-          array[d + 2] = blueMin;
+        for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+        const neighborY = clamp(y + offsetY, 0, height - 1);
 
-      } else { // 'max'
-          array[d] = redMax;
-          array[d + 1] = greenMax;
-          array[d + 2] = blueMax;
+        for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+          const neighborX = clamp(x + offsetX, 0, width - 1);
+          const neighborIndex = idx(neighborX, neighborY);
+
+          const neighborRed   = src[neighborIndex];
+          const neighborGreen = src[neighborIndex + 1];
+          const neighborBlue  = src[neighborIndex + 2];
+
+          // mean
+          redSum   += neighborRed;
+          greenSum += neighborGreen;
+          blueSum  += neighborBlue;
+
+          // min
+          if (neighborRed   < redMin)   redMin   = neighborRed;
+          if (neighborGreen < greenMin) greenMin = neighborGreen;
+          if (neighborBlue  < blueMin)  blueMin  = neighborBlue;
+
+          // max
+          if (neighborRed   > redMax)   redMax   = neighborRed;
+          if (neighborGreen > greenMax) greenMax = neighborGreen;
+          if (neighborBlue  > blueMax)  blueMax  = neighborBlue;
+        }
+      }
+
+        const d = idx(x, y);
+
+        if (kind === 'mean') {
+          const count = size * size;
+          array[d] = Math.round(redSum / count);
+          array[d + 1] = Math.round(greenSum / count);
+          array[d + 2] = Math.round(blueSum / count);
+
+        } else if (kind === 'min') {
+            array[d] = redMin;
+            array[d + 1] = greenMin;
+            array[d + 2] = blueMin;
+
+        } else { // 'max'
+            array[d] = redMax;
+            array[d + 1] = greenMax;
+            array[d + 2] = blueMax;
+        }
       }
     }
+    return imageData;
+    });
   }
-  return imageData;
-  });
-}
 
-applyMedianFilter(size: number = 3) {
+  applyMedianFilter(size: number = 3) {
 
     const radius = Math.floor(size / 2);
 
@@ -1135,69 +1134,66 @@ applyMedianFilter(size: number = 3) {
     return Math.round((array[mid - 1] + array[mid]) / 2);
   }
 
+  applyOrderFilter(windowSize: number = 3, k: number) {
 
-applyOrderFilter(windowSize: number = 3, k: number) {
+    const radius = Math.floor(windowSize / 2);
 
-  const radius = Math.floor(windowSize / 2);
+    this.runOnImageData((imageData) => {
+    const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+    const sourcePixels = new Uint8ClampedArray(pixels); 
 
-  this.runOnImageData((imageData) => {
-  const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
-  const sourcePixels = new Uint8ClampedArray(pixels); 
+    const clamp = (v: number, lo: number, hi: number) => {
+      return v < lo ? lo : v > hi ? hi : v
+    };
 
-  const clamp = (v: number, lo: number, hi: number) => {
-    return v < lo ? lo : v > hi ? hi : v
-  };
-
-  const idx = (x: number, y: number) => {
-    return (y * imageWidth + x) * 4;
-  }
-
-  const redValues: number[] = [];
-  const greenValues: number[] = [];
-  const blueValues: number[] = [];
-
-  for (let pixelY = 0; pixelY < imageHeight; pixelY++) {
-    for (let pixelX = 0; pixelX < imageWidth; pixelX++) {
-     redValues.length = 0; 
-     greenValues.length = 0; 
-     blueValues.length = 0;
-
-      for (let offsetY = -radius; offsetY <= radius; offsetY++) {
-        const neighborY = clamp(pixelY + offsetY, 0, imageHeight - 1);
-        for (let offsetX = -radius; offsetX <= radius; offsetX++) {
-          const neighborX = clamp(pixelX + offsetX, 0, imageWidth - 1);
-          const neighborIndex = idx(neighborX, neighborY);
-
-          redValues.push(sourcePixels[neighborIndex]);
-          greenValues.push(sourcePixels[neighborIndex + 1]);
-          blueValues.push(sourcePixels[neighborIndex + 2]);
-        }
-      }
-
-    const destIndex = idx(pixelX, pixelY);
-    pixels[destIndex] = this.kthOrder(redValues, k);
-    pixels[destIndex + 1] = this.kthOrder(greenValues, k);
-    pixels[destIndex + 2] = this.kthOrder(blueValues, k);
+    const idx = (x: number, y: number) => {
+      return (y * imageWidth + x) * 4;
     }
+
+    const redValues: number[] = [];
+    const greenValues: number[] = [];
+    const blueValues: number[] = [];
+
+    for (let pixelY = 0; pixelY < imageHeight; pixelY++) {
+      for (let pixelX = 0; pixelX < imageWidth; pixelX++) {
+      redValues.length = 0; 
+      greenValues.length = 0; 
+      blueValues.length = 0;
+
+        for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+          const neighborY = clamp(pixelY + offsetY, 0, imageHeight - 1);
+          for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+            const neighborX = clamp(pixelX + offsetX, 0, imageWidth - 1);
+            const neighborIndex = idx(neighborX, neighborY);
+
+            redValues.push(sourcePixels[neighborIndex]);
+            greenValues.push(sourcePixels[neighborIndex + 1]);
+            blueValues.push(sourcePixels[neighborIndex + 2]);
+          }
+        }
+
+      const destIndex = idx(pixelX, pixelY);
+      pixels[destIndex] = this.kthOrder(redValues, k);
+      pixels[destIndex + 1] = this.kthOrder(greenValues, k);
+      pixels[destIndex + 2] = this.kthOrder(blueValues, k);
+      }
+    }
+
+    return imageData;
+    });
   }
 
-  return imageData;
-  });
-}
-
-
-kthOrder(values: number[], k: number): number {
-  if (k < 1) {
-    k = 1;
+  kthOrder(values: number[], k: number): number {
+    if (k < 1) {
+      k = 1;
+    }
+    if (k > values.length) {
+      k = values.length;
+    }
+    values.sort((a, b) => a - b);
+    return values[k - 1];
   }
-  if (k > values.length) {
-    k = values.length;
-  }
-  values.sort((a, b) => a - b);
-  return values[k - 1];
-}
 
-  
   conservativeSmoothing(window: number) {
 
     const radius = Math.floor(window / 2);
@@ -1206,7 +1202,7 @@ kthOrder(values: number[], k: number): number {
       const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
       const sourcePixels = new Uint8ClampedArray(pixels);
 
-      const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
+      const clamp = (value: number, min: number, max: number) => (value < min ? min : value > max ? max : value);
       const pixelIndex = (x: number, y: number) => ((y * imageWidth + x) << 2);
 
       for (let y = 0; y < imageHeight; y++) {
@@ -1214,24 +1210,36 @@ kthOrder(values: number[], k: number): number {
           let redMin = 255, greenMin = 255, blueMin = 255;
           let redMax = 0,   greenMax = 0,   blueMax = 0;
 
-          // vizinhança N×N (replicate nas bordas)
           for (let offY = -radius; offY <= radius; offY++) {
             const ny = clamp(y + offY, 0, imageHeight - 1);
             for (let offX = -radius; offX <= radius; offX++) {
-              if ( offX === 0 && offY === 0) continue; // exclui centro
-              const nx = clamp(x + offX, 0, imageWidth - 1);
-              const nIdx = pixelIndex(nx, ny);
+              if ( offX === 0 && offY === 0) continue;
+              const newx = clamp(x + offX, 0, imageWidth - 1);
+              const newIdx = pixelIndex(newx, ny);
 
-              const r = sourcePixels[nIdx];
-              const g = sourcePixels[nIdx + 1];
-              const b = sourcePixels[nIdx + 2];
+              const r = sourcePixels[newIdx];
+              const g = sourcePixels[newIdx + 1];
+              const b = sourcePixels[newIdx + 2];
 
-              if (r < redMin)   redMin   = r;
-              if (g < greenMin) greenMin = g;
-              if (b < blueMin)  blueMin  = b;
-              if (r > redMax)   redMax   = r;
-              if (g > greenMax) greenMax = g;
-              if (b > blueMax)  blueMax  = b;
+              if (r < redMin) {
+                redMin = r;
+              }
+              if (g < greenMin) {
+                greenMin = g;
+              }
+              if (b < blueMin) {
+                blueMin = b;
+              }
+              if (r > redMax) {
+                redMax = r;
+              }
+              if (g > greenMax) {
+                greenMax = g;
+              }
+              if (b > blueMax) {
+                blueMax = b;
+              }
+
             }
           }
 
@@ -1248,7 +1256,7 @@ kthOrder(values: number[], k: number): number {
     });
   }
 
-  gaussianBlurEx(window: number = 3, sigma: number): void {
+  gaussianBlurEx(window: number = 3, sigma: number) {
 
     const radius = Math.floor(window / 2);
     // build 1D gaussian kernel, normalized
@@ -1327,43 +1335,43 @@ kthOrder(values: number[], k: number): number {
 prewitt(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
   this.runOnImageData((imageData) => {
     const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
-    const src = new Uint8ClampedArray(pixels); // snapshot
+    const src = new Uint8ClampedArray(pixels);
 
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const idx = (x: number, y: number) => (y * imageWidth + x) * 4;
 
-    // declare BEFORE any use to avoid TS “used before its declaration”
     const getLuma = (base: number) =>
       0.299 * src[base] + 0.587 * src[base + 1] + 0.114 * src[base + 2];
 
-    // map the theoretical maxima to 255
     const scaleX = 1 / 3;                  // |gx|max = 3*255  -> 255
     const scaleY = 1 / 3;                  // |gy|max = 3*255  -> 255
     const scaleMag = 1 / (3 * Math.SQRT2); // sqrt(2)*(3*255) -> 255
 
+    const Kernelx = [-1, 0, 1, -1, 0, 1, -1, 0, 1]; 
+    const Kernely = [1, 1, 1, 0, 0, 0, -1, -1, -1]; 
+
     for (let y = 0; y < imageHeight; y++) {
       for (let x = 0; x < imageWidth; x++) {
-        const xm1 = clampIndex(x - 1, imageWidth);
-        const xp1 = clampIndex(x + 1, imageWidth);
-        const ym1 = clampIndex(y - 1, imageHeight);
-        const yp1 = clampIndex(y + 1, imageHeight);
+        let gx = 0;
+        let gy = 0;
 
-        // neighbor indices (replicate borders)
-        const i00 = idx(xm1, ym1), i10 = idx(x, ym1), i20 = idx(xp1, ym1);
-        const i01 = idx(xm1, y),   i11 = idx(x, y),   i21 = idx(xp1, y);
-        const i02 = idx(xm1, yp1), i12 = idx(x, yp1), i22 = idx(xp1, yp1);
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const xm = clampIndex(x + kx, imageWidth);
+            const ym = clampIndex(y + ky, imageHeight);
+            const i = idx(xm, ym);
 
-        // luminance (grayscale) neighborhood
-        const L00 = getLuma(i00), L10 = getLuma(i10), L20 = getLuma(i20);
-        const L01 = getLuma(i01), /* L11 = getLuma(i11); not needed */     L21 = getLuma(i21);
-        const L02 = getLuma(i02), L12 = getLuma(i12), L22 = getLuma(i22);
+            // grayscale
+            const luma = getLuma(i);
 
-        // Prewitt gradients
-        // Gx: right column minus left column
-        const gx = (L20 + L21 + L22) - (L00 + L01 + L02);
-        // Gy: top row minus bottom row
-        const gy = (L00 + L10 + L20) - (L02 + L12 + L22);
+            // Convolve with Kernelx (horizontal gradient)
+            gx += Kernelx[(ky + 1) * 3 + (kx + 1)] * luma;
 
+            // Convolve with Kernely (vertical gradient)
+            gy += Kernely[(ky + 1) * 3 + (kx + 1)] * luma;
+          }
+        }
+        
         let out: number;
         if (direction === 'x') {
           out = Math.abs(gx) * scaleX;
@@ -1374,56 +1382,58 @@ prewitt(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
         }
 
         const v = Math.max(0, Math.min(255, Math.round(out)));
+        const i11 = idx(x, y);
         pixels[i11]     = v;
         pixels[i11 + 1] = v;
         pixels[i11 + 2] = v;
-        // alpha preserved (pixels[i11 + 3])
       }
     }
 
     return imageData;
   });
 }
+
 
 sobel(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
   this.runOnImageData((imageData) => {
     const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
-    const src = new Uint8ClampedArray(pixels); // snapshot
-
+    const src = new Uint8ClampedArray(pixels); 
+    
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const idx = (x: number, y: number) => (y * imageWidth + x) * 4;
 
-    // declare before any use
     const getLuma = (base: number) =>
       0.299 * src[base] + 0.587 * src[base + 1] + 0.114 * src[base + 2];
 
-    // scale maxima to 255 (|gx|max = |gy|max = 4*255)
+    // scale maxim to 255 (|gx|max = |gy|max = 4*255)
     const scaleX = 1 / 4;
     const scaleY = 1 / 4;
     const scaleMag = 1 / (4 * Math.SQRT2);
 
+    // kernels (Gx and Gy)
+    const Kx = [-1, 0, 1, -2, 0, 2, -1, 0, 1]; 
+    const Ky = [1, 2, 1, 0, 0, 0, -1, -2, -1]; 
+
     for (let y = 0; y < imageHeight; y++) {
       for (let x = 0; x < imageWidth; x++) {
-        const xm1 = clampIndex(x - 1, imageWidth);
-        const xp1 = clampIndex(x + 1, imageWidth);
-        const ym1 = clampIndex(y - 1, imageHeight);
-        const yp1 = clampIndex(y + 1, imageHeight);
+        let gx = 0;
+        let gy = 0;
 
-        // neighbor indices (replicate borders)
-        const i00 = idx(xm1, ym1), i10 = idx(x, ym1), i20 = idx(xp1, ym1);
-        const i01 = idx(xm1, y),   i11 = idx(x, y),   i21 = idx(xp1, y);
-        const i02 = idx(xm1, yp1), i12 = idx(x, yp1), i22 = idx(xp1, yp1);
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const xm = clampIndex(x + kx, imageWidth);
+            const ym = clampIndex(y + ky, imageHeight);
+            const i = idx(xm, ym);
 
-        // luminance values
-        const L00 = getLuma(i00), L10 = getLuma(i10), L20 = getLuma(i20);
-        const L01 = getLuma(i01),                         L21 = getLuma(i21);
-        const L02 = getLuma(i02), L12 = getLuma(i12), L22 = getLuma(i22);
+            // grayscale
+            const luma = getLuma(i);
 
-        // Sobel gradients:
-        // Gx = [[-1,0,1],[-2,0,2],[-1,0,1]]
-        const gx = (L20 + 2 * L21 + L22) - (L00 + 2 * L01 + L02);
-        // Gy = [[ 1,2,1],[ 0,0,0],[-1,-2,-1]]
-        const gy = (L00 + 2 * L10 + L20) - (L02 + 2 * L12 + L22);
+            // Convolve with Kx (horizontal gradient)
+            gx += Kx[(ky + 1) * 3 + (kx + 1)] * luma;
+            // Convolve with Ky (vertical gradient)
+            gy += Ky[(ky + 1) * 3 + (kx + 1)] * luma;
+          }
+        }
 
         let out: number;
         if (direction === 'x') {
@@ -1435,10 +1445,10 @@ sobel(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
         }
 
         const v = Math.max(0, Math.min(255, Math.round(out)));
+        const i11 = idx(x, y);
         pixels[i11]     = v;
         pixels[i11 + 1] = v;
         pixels[i11 + 2] = v;
-        // alpha preserved
       }
     }
 
@@ -1446,58 +1456,254 @@ sobel(direction: 'magnitude' | 'x' | 'y' = 'magnitude') {
   });
 }
 
-laplacian( mode: 'abs' | 'signed' = 'abs', neighbors: 4 | 8 = 8) {
+
+laplacian(mode: 'abs' | 'signed' = 'abs', neighbors: 4 | 8 = 8) {
   this.runOnImageData((imageData) => {
     const { width: W, height: H, data: pixels } = imageData;
-    const src = new Uint8ClampedArray(pixels); // snapshot
+    const src = new Uint8ClampedArray(pixels); 
 
     const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
     const idx = (x: number, y: number) => (y * W + x) * 4;
     const luma = (p: number) => 0.299 * src[p] + 0.587 * src[p + 1] + 0.114 * src[p + 2];
 
-    // máximo teórico: 4*255 (viz.4) ou 8*255 (viz.8) → escala p/ 255
     const scale = (neighbors === 4) ? (1 / 4) : (1 / 8);
+
+    // laplacian kernels based on the number of neighbors
+    const K4 = [0, 1, 0, 1, -4, 1, 0, 1, 0];  // 4 neighbors (Manhattan)
+    const K8 = [1, 1, 1, 1, -8, 1, 1, 1, 1];  // 8 neighbors (Chebyshev)
+    const kernel = (neighbors === 4) ? K4 : K8;
 
     for (let y = 0; y < H; y++) {
       for (let x = 0; x < W; x++) {
-        const xm1 = clampIndex(x - 1, W), xp1 = clampIndex(x + 1, W);
-        const ym1 = clampIndex(y - 1, H), yp1 = clampIndex(y + 1, H);
+        let L = 0;
 
-        const i00 = idx(xm1, ym1), i10 = idx(x, ym1), i20 = idx(xp1, ym1);
-        const i01 = idx(xm1, y),   i11 = idx(x, y),   i21 = idx(xp1, y);
-        const i02 = idx(xm1, yp1), i12 = idx(x, yp1), i22 = idx(xp1, yp1);
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const xm = clampIndex(x + kx, W);
+            const ym = clampIndex(y + ky, H);
+            const i = idx(xm, ym);
 
-        const L00 = luma(i00), L10 = luma(i10), L20 = luma(i20);
-        const L01 = luma(i01), L11 = luma(i11), L21 = luma(i21);
-        const L02 = luma(i02), L12 = luma(i12), L22 = luma(i22);
+            //grayscale
+            const l = luma(i);
 
-        let L: number;
-        if (neighbors === 4) {
-          // kernel: [0  1  0; 1 -4 1; 0  1  0]
-          L = (L10 + L01 + L21 + L12) - 4 * L11;
-        } else {
-          // kernel: [1  1  1; 1 -8 1; 1  1  1]
-          L = (L00 + L10 + L20 + L01 + L21 + L02 + L12 + L22) - 8 * L11;
+            // Convolve with the kernel (sum the products of luminance and kernel values)
+            L += kernel[(ky + 1) * 3 + (kx + 1)] * l;
+          }
         }
 
         let out: number;
         if (mode === 'abs') {
-          out = Math.abs(L) * scale;                 // 0..255
-        } else { // 'signed' → mapeia [-M..M] para [0..255], centro=128
+          out = Math.abs(L) * scale;
+        } else { 
           out = L * scale * 0.5 + 127.5;
         }
 
         const v = Math.max(0, Math.min(255, Math.round(out)));
+        const i11 = idx(x, y);
         pixels[i11]     = v;
         pixels[i11 + 1] = v;
         pixels[i11 + 2] = v;
-        // alpha preservado
       }
     }
     return imageData;
   });
 }
 
+applyCustomKernel(kernel: number[]) {
+
+  this.runOnImageData((imageData) => {
+    const { width: W, height: H, data: pixels } = imageData;
+    const src = new Uint8ClampedArray(pixels); 
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const idx = (x: number, y: number) => (y * W + x) * 4;
+    
+    const luma = (p: number) => 0.299 * src[p] + 0.587 * src[p + 1] + 0.114 * src[p + 2];
+
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        let result = 0;
+
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const xm = clampIndex(x + kx, W);
+            const ym = clampIndex(y + ky, H);
+            const i = idx(xm, ym);
+
+            const l = luma(i);
+
+
+            const kernelValue = kernel[(ky + 1) * 3 + (kx + 1)];
+            result += kernelValue * l;
+          }
+        }
+
+        let  out = Math.abs(result) * (1/3);
+
+        const v = Math.max(0, Math.min(255, Math.round(out)));
+        const i11 = idx(x, y);
+        pixels[i11]     = v;
+        pixels[i11 + 1] = v;
+        pixels[i11 + 2] = v;
+      }
+    }
+    return imageData;
+  });
+}
+
+
+// ╔══════════════════╗
+// ║     MORFOLOG     ║
+// ╚══════════════════╝
+
+dilate(window: number = 3): void {
+  // Morphological dilation (flat SE): local max in an N×N neighborhood (replicate borders)
+  let size = Math.max(3, Math.trunc(window));
+  if (size % 2 === 0) size += 1;
+  const radius = Math.floor(size / 2);
+
+  this.runOnImageData((imageData) => {
+    const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+    const sourcePixels = new Uint8ClampedArray(pixels); // snapshot
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const pixelIndex = (x: number, y: number) => (y * imageWidth + x) * 4;
+
+    for (let pixelY = 0; pixelY < imageHeight; pixelY++) {
+      for (let pixelX = 0; pixelX < imageWidth; pixelX++) {
+        let redMax = 0, greenMax = 0, blueMax = 0;
+
+        for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+          const neighborY = clampIndex(pixelY + offsetY, imageHeight);
+          for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+            const neighborX = clampIndex(pixelX + offsetX, imageWidth);
+            const n = pixelIndex(neighborX, neighborY);
+
+            const r = sourcePixels[n];
+            const g = sourcePixels[n + 1];
+            const b = sourcePixels[n + 2];
+
+            if (r > redMax)   redMax   = r;
+            if (g > greenMax) greenMax = g;
+            if (b > blueMax)  blueMax  = b;
+          }
+        }
+
+        const d = pixelIndex(pixelX, pixelY);
+        pixels[d]     = redMax;
+        pixels[d + 1] = greenMax;
+        pixels[d + 2] = blueMax;
+      }
+    }
+    return imageData;
+  });
+}
+
+
+ erode(window: number = 3): void {
+  // Morphological erosion (flat SE): local min in an N×N neighborhood (replicate borders)
+  let size = Math.max(3, Math.trunc(window));
+  if (size % 2 === 0) size += 1;
+  const radius = Math.floor(size / 2);
+
+  this.runOnImageData((imageData) => {
+    const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+    const sourcePixels = new Uint8ClampedArray(pixels); // snapshot
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const pixelIndex = (x: number, y: number) => (y * imageWidth + x) * 4;
+
+    for (let pixelY = 0; pixelY < imageHeight; pixelY++) {
+      for (let pixelX = 0; pixelX < imageWidth; pixelX++) {
+        let redMin = 255, greenMin = 255, blueMin = 255;
+
+        for (let offsetY = -radius; offsetY <= radius; offsetY++) {
+          const neighborY = clampIndex(pixelY + offsetY, imageHeight);
+          for (let offsetX = -radius; offsetX <= radius; offsetX++) {
+            const neighborX = clampIndex(pixelX + offsetX, imageWidth);
+            const n = pixelIndex(neighborX, neighborY);
+
+            const r = sourcePixels[n];
+            const g = sourcePixels[n + 1];
+            const b = sourcePixels[n + 2];
+
+            if (r < redMin)   redMin   = r;
+            if (g < greenMin) greenMin = g;
+            if (b < blueMin)  blueMin  = b;
+          }
+        }
+
+        const d = pixelIndex(pixelX, pixelY);
+        pixels[d]     = redMin;
+        pixels[d + 1] = greenMin;
+        pixels[d + 2] = blueMin;
+      }
+    }
+    return imageData;
+  });
+}
+
+public contour(
+  window: number = 3,
+  mode: 'inner' | 'outer' | 'gradient' = 'gradient'
+): void {
+  // Contorno morfológico:
+  // - 'inner'    : original - erode(original)
+  // - 'outer'    : dilate(original) - original
+  // - 'gradient' : dilate(original) - erode(original)   (padrão)
+  let size = Math.max(3, Math.trunc(window));
+  if (size % 2 === 0) size += 1;
+  const radius = Math.floor(size / 2);
+
+  this.runOnImageData((imageData) => {
+    const { width: imageWidth, height: imageHeight, data: pixels } = imageData;
+    const source = new Uint8ClampedArray(pixels); // snapshot
+
+    const clampIndex = (i: number, n: number) => (i < 0 ? 0 : (i >= n ? n - 1 : i));
+    const pixelIndex = (x: number, y: number) => (y * imageWidth + x) * 4;
+
+    for (let y = 0; y < imageHeight; y++) {
+      for (let x = 0; x < imageWidth; x++) {
+        let rMin = 255, gMin = 255, bMin = 255;
+        let rMax = 0,   gMax = 0,   bMax = 0;
+
+        // varre vizinhança N×N (bordas replicadas)
+        for (let offY = -radius; offY <= radius; offY++) {
+          const ny = clampIndex(y + offY, imageHeight);
+          for (let offX = -radius; offX <= radius; offX++) {
+            const nx = clampIndex(x + offX, imageWidth);
+            const nIdx = pixelIndex(nx, ny);
+
+            const r = source[nIdx];
+            const g = source[nIdx + 1];
+            const b = source[nIdx + 2];
+
+            if (r < rMin) rMin = r; if (g < gMin) gMin = g; if (b < bMin) bMin = b;
+            if (r > rMax) rMax = r; if (g > gMax) gMax = g; if (b > bMax) bMax = b;
+          }
+        }
+
+        const dIdx = pixelIndex(x, y);
+        const r0 = source[dIdx], g0 = source[dIdx + 1], b0 = source[dIdx + 2];
+
+        let rOut: number, gOut: number, bOut: number;
+        if (mode === 'inner') {
+          rOut = r0 - rMin; gOut = g0 - gMin; bOut = b0 - bMin;
+        } else if (mode === 'outer') {
+          rOut = rMax - r0; gOut = gMax - g0; bOut = bMax - b0;
+        } else { // 'gradient'
+          rOut = rMax - rMin; gOut = gMax - gMin; bOut = bMax - bMin;
+        }
+
+        // clamp 0..255
+        pixels[dIdx]     = rOut < 0 ? 0 : (rOut > 255 ? 255 : rOut | 0);
+        pixels[dIdx + 1] = gOut < 0 ? 0 : (gOut > 255 ? 255 : gOut | 0);
+        pixels[dIdx + 2] = bOut < 0 ? 0 : (bOut > 255 ? 255 : bOut | 0);
+      }
+    }
+    return imageData;
+  });
+}
 
 }
 

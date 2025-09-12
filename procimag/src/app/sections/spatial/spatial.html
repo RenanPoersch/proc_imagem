@@ -46,16 +46,16 @@
                     [disabled]="!imageService.hasProcessableImage"
                     class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
                 <span class="text-xs text-zinc-600">{{order}}</span>
+                <div class="grid">
+                    <button (click)="applyOrder()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+                    disabled:bg-zinc-200 disabled:text-zinc-400
+                    disabled:cursor-not-allowed">
+                        ORDER
+                    </button>
+                </div>
             </div>
         </div>
         <div class="grid gap-3">
-            <button (click)="applyOrder()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
-            disabled:bg-zinc-200 disabled:text-zinc-400
-            disabled:cursor-not-allowed">
-                ORDER
-            </button>
-        </div>
-        <div class="grid gap-3 mt-4">
             <button (click)="conservativeSmoothing()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
         disabled:bg-zinc-200 disabled:text-zinc-400
         disabled:cursor-not-allowed">
@@ -63,29 +63,47 @@
             </button>
         </div>
         <div class="grid gap-3 mt-4">
-            <button (click)="gaussianBlurEx()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
-        disabled:bg-zinc-200 disabled:text-zinc-400
-        disabled:cursor-not-allowed">
-                GAUUSS
-            </button>
             <div class="space-y-3 shadow-md cursor-pointer p-3 text-sm bg-white rounded mb-3">
                 <label class="text-sm">σ</label>
                 <input type="range" [min]="0.1" [max]="10" [step]="0.1" [(ngModel)]="sigma" (input)="gaussianBlurEx()"
                     [disabled]="!imageService.hasProcessableImage"
                     class="w-full accent-zinc-600 cursor-pointer disabled:cursor-not-allowed" />
                 <span class="text-xs text-zinc-600">{{sigma}}</span>
+                <div class="grid">
+                    <button (click)="gaussianBlurEx()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+                disabled:bg-zinc-200 disabled:text-zinc-400
+                disabled:cursor-not-allowed">
+                        GAUUSS
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-span-1">
-        <div class="grid gap-3">
-            <button (click)="prewitt()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
-        disabled:bg-zinc-200 disabled:text-zinc-400
-        disabled:cursor-not-allowed">
-                Prewitt
-            </button>
+        <div class="grid grid-cols-3 gap-3">
+            <div class="grid gap-3">
+                <button (click)="prewitt()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Prewitt magnitude
+                </button>
+            </div>
+            <div class="grid gap-3">
+                <button (click)="prewitt('x')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Prewitt x
+                </button>
+            </div>
+            <div class="grid gap-3">
+                <button (click)="prewitt('y')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            disabled:bg-zinc-200 disabled:text-zinc-400
+            disabled:cursor-not-allowed">
+                    Prewitt y
+                </button>
+            </div>
         </div>
-        <div  class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-3 gap-3">
             <div class="grid gap-3 mt-4">
                 <button (click)="sobel('magnitude')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
             disabled:bg-zinc-200 disabled:text-zinc-400
@@ -100,7 +118,7 @@
                     Sobel x
                 </button>
             </div>
-             <div class="grid gap-3 mt-4">
+            <div class="grid gap-3 mt-4">
                 <button (click)="sobel('y')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
             disabled:bg-zinc-200 disabled:text-zinc-400
             disabled:cursor-not-allowed">
@@ -108,7 +126,7 @@
                 </button>
             </div>
         </div>
-        <div  class="grid grid-cols-2 mt-4 gap-3 h-full">
+        <div class="grid grid-cols-2 mt-4 gap-3 h-full">
             <div class="grid gap-3 col-span-1">
                 <button (click)="laplace('abs', 4)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
             disabled:bg-zinc-200 disabled:text-zinc-400
@@ -136,6 +154,38 @@
             disabled:cursor-not-allowed">
                     Laplaciano Signed 8
                 </button>
+            </div>
+        </div>
+        <div class="shadow-md p-4 text-sm bg-white rounded mb-3 mt-4 h-full">
+            <div class="flex items-start gap-4">
+                <div class="grid grid-cols-3 gap-2">
+                    <div><input type="number" [(ngModel)]="kernel[0]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[1]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[2]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+
+                    <div><input type="number" [(ngModel)]="kernel[3]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[4]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[5]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[6]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[7]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                    <div><input type="number" [(ngModel)]="kernel[8]"
+                            class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
+                </div>
+                <div class="flex items-center justify-center">
+                    <button (click)="applyCustomKernel(kernel)" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+                disabled:bg-zinc-200 disabled:text-zinc-400
+                disabled:cursor-not-allowed">
+                        Custom
+                    </button>
+                </div>
             </div>
         </div>
     </div>
