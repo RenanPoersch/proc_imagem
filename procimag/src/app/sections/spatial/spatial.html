@@ -17,24 +17,25 @@
             </button>
         </div>
         <div class="grid gap-3 mt-4">
-            <button (click)="changeFilterKind('max')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            <button (click)="applyAverage()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
         disabled:bg-zinc-200 disabled:text-zinc-400
         disabled:cursor-not-allowed">
-                MEAN
+                MEDIAN
             </button>
+
         </div>
         <div class="grid gap-3 mt-4">
-            <button (click)="changeFilterKind('mean')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            <button (click)="changeFilterKind('max')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
         disabled:bg-zinc-200 disabled:text-zinc-400
         disabled:cursor-not-allowed">
                 MAX
             </button>
         </div>
         <div class="grid gap-3 mt-4">
-            <button (click)="applyAverage()" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
+            <button (click)="changeFilterKind('mean')" [disabled]="!imageService.hasProcessableImage" class="shadow-md cursor-pointer p-3 text-sm bg-white rounded hover:shadow-lg transition enabled:hover:shadow-lg
         disabled:bg-zinc-200 disabled:text-zinc-400
         disabled:cursor-not-allowed">
-                MEDIAN
+                MEAN
             </button>
         </div>
     </div>
@@ -165,7 +166,6 @@
                             class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
                     <div><input type="number" [(ngModel)]="kernel[2]"
                             class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
-
                     <div><input type="number" [(ngModel)]="kernel[3]"
                             class="w-full h-full p-1 text-center focus:outline-none rounded" /></div>
                     <div><input type="number" [(ngModel)]="kernel[4]"
